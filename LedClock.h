@@ -1,5 +1,15 @@
 #ifndef LEDCLOK_H
 #define LEDCLOK_H
+#include <Arduino_FreeRTOS.h>
+
+#define OsDelay(ms) vTaskDelay(ms/portTICK_PERIOD_MS)
+
+
+
+extern bool ShowTimeDate;
+extern bool SensorOn;
+extern bool SettingTime;
+extern bool ResetArduino;
 
 typedef enum
 {
@@ -17,6 +27,7 @@ typedef enum
 	MAX_PIN
 	
 }PIN_CONF;
+
 
 
 #endif
