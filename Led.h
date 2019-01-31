@@ -3,7 +3,9 @@
 
 #include <Arduino.h>
 
-void ShowDateTimeDisplay(void);
-void MinuteLed(void);
-
+void LedInit(void);
+void ShowDateTimeDisplayBySensor(void);
+void ShowDateTimeDisplayByButton(void);
+void MinuteLed(uint8_t WichLed);
+void CheckForDisplayTime(void);
 #endif

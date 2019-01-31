@@ -1,6 +1,7 @@
 #ifndef LEDCLOK_H
 #define LEDCLOK_H
 #include <Arduino_FreeRTOS.h>
+#include "TaskOptions.h"
 
 #define OsDelay(ms) vTaskDelay(ms/portTICK_PERIOD_MS)
 

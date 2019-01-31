@@ -4,7 +4,7 @@
 #include "SegmentDisplay.h"
 #include "KeyBoard.h"
 
-static PilotMultiplexer(uint8_t State_1, uint8_t State_2, uint8_t State_3, uint8_t State_4)
+static void PilotMultiplexer(uint8_t State_1, uint8_t State_2, uint8_t State_3, uint8_t State_4)
 {
 	digitalWrite(MULTI_1, State_1);
 	digitalWrite(MULTI_2, State_2);
@@ -12,21 +12,65 @@ static PilotMultiplexer(uint8_t State_1, uint8_t State_2, uint8_t State_3, uint8
 	digitalWrite(MULTI_4, State_4);	
 }
 
-void ShowDateTimeDisplay()
+void LedInit()
+{
+	uint8_t LedIndex = 0;
+	for(LedIndex = 0; LedIndex <= 11; LedIndex++)
+	{
+		MinuteLed(5 * LedIndex);
+		OsDelay(300);
+	}
+}
+
+
+void ShowDateTimeDisplayBySensor()
 {
 	if(ShowTimeDate)
 	{
-		ShowNumber(TimeNumbers, true);
-		OsDelay(2500);
-		ShowNumber(DateNumbers, false);
-		OsDelay(2500);
+		bool TogglePoint = POINTS_ON;
+		for(uint8_t i = 0; i < 8; i++)
+		{
+			ShowNumber(TimeNumbers, TogglePoint);
+			TogglePoint = !TogglePoint;
+			OsDelay(1000);			
+		}
+		ShowNumber(DateNumbers, POINTS_OFF);
+		OsDelay(6000);
 		ShowTimeDate = false;
 	}
 }
 
-void MinuteLed()
+void CheckForDisplayTime()
 {
-	switch(GlobalTimeDate.minute())
+	if(!SettingTime)
+	{
+		if(ButtonPress == UP && SensorOn)
+		{
+			SensorOn = false;
+		}
+		else if(ButtonPress == UP && !SensorOn)
+		{
+			SensorOn = true;	
+		}
+	}
+}
+
+void ShowDateTimeDisplayByButton()
+{
+	bool TogglePoint = POINTS_ON;
+	for(uint8_t i = 0; i < 8; i++)
+	{
+		ShowNumber(TimeNumbers, TogglePoint);
+		TogglePoint = !TogglePoint;
+		OsDelay(1000);			
+	}
+	ShowNumber(DateNumbers, POINTS_OFF);
+	OsDelay(6000);
+}
+
+void MinuteLed(uint8_t WichLed)
+{
+	switch(WichLed)
 	{
 		case 0:
 			PilotMultiplexer(LOW, LOW, LOW, LOW);

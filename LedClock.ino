@@ -22,7 +22,8 @@ void(* Reset) (void) = 0;
 void setup()
 {
 	Serial.begin(9600);
-	
+
+#ifdef TASK_LED	
 	xTaskCreate(
 	Led
 	,  (const portCHAR *)"Led"   // A name just for humans
@@ -30,7 +31,9 @@ void setup()
 	,  NULL
 	,  2  // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
 	,  NULL );
+#endif
 
+#ifdef TASK_GES_EVENTS	
 	xTaskCreate(
 	GesEvents
 	,  (const portCHAR *) "GesEvents"
@@ -38,7 +41,9 @@ void setup()
 	,  NULL
 	,  1  // Priority
 	,  NULL );
+#endif
 
+#ifdef TASK_SENSOR
 	xTaskCreate(
 	ReadSensor
 	,  (const portCHAR *) "Sensor"
@@ -46,7 +51,9 @@ void setup()
 	,  NULL
 	,  1  // Priority
 	,  NULL );
-	
+#endif
+
+#ifdef TASK_TIME	
 	xTaskCreate(
 	GetTime
 	,  (const portCHAR *) "GetTime"
@@ -54,7 +61,9 @@ void setup()
 	,  NULL
 	,  1  // Priority
 	,  NULL );
-	
+#endif
+
+#ifdef TASK_KEYBOARD	
 	xTaskCreate(
 	KeyBoard
 	,  (const portCHAR *) "KeyBoard"
@@ -62,6 +71,9 @@ void setup()
 	,  NULL
 	,  1  // Priority
 	,  NULL );
+#endif
+	
+	
 	// Now the task scheduler, which takes over control of scheduling individual tasks, is automatically started.
 
 }
@@ -72,15 +84,20 @@ void loop()
 	
 }
 
+#ifdef TASK_LED
 void Led(void *pvParameters)  // This is a task.
 {
 	(void) pvParameters;
+	LedInit();
 	for(;;)
 	{
 		if(!SettingTime)
 		{
-			ShowDateTimeDisplay();
-			MinuteLed();
+			if(SensorOn)
+				ShowDateTimeDisplayBySensor();
+			else
+				ShowDateTimeDisplayByButton();
+			MinuteLed(GlobalTimeDate.minute());
 		}
 		else
 		{
@@ -89,7 +106,9 @@ void Led(void *pvParameters)  // This is a task.
 		OsDelay(500);
 	}
 }
+#endif
 
+#ifdef TASK_GES_EVENTS
 void GesEvents(void *pvParameters)  // This is a task.
 {
 	(void) pvParameters;
@@ -100,12 +119,15 @@ void GesEvents(void *pvParameters)  // This is a task.
 			ResetArduino = false;
 			Reset();
 		}
+		
 		CheckForSetTime();
+		CheckForDisplayTime();
 		OsDelay(50);
 	}
 }
+#endif
 
-
+#ifdef TASK_SENSOR
 void ReadSensor(void *pvParameters)  // This is a task.
 {
 	(void) pvParameters;
@@ -116,7 +138,9 @@ void ReadSensor(void *pvParameters)  // This is a task.
 		OsDelay(200);
 	}
 }
+#endif
 
+#ifdef TASK_TIME
 void GetTime(void *pvParameters)  // This is a task.
 {
 	(void) pvParameters;
@@ -128,7 +152,9 @@ void GetTime(void *pvParameters)  // This is a task.
 		OsDelay(500);
 	}
 }
+#endif
 
+#ifdef TASK_KEYBOARD
 void KeyBoard(void *pvParameters)  // This is a task.
 {
 	(void) pvParameters;
@@ -139,3 +165,4 @@ void KeyBoard(void *pvParameters)  // This is a task.
 		OsDelay(20);
 	}
 }
+#endif

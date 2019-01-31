@@ -8,7 +8,23 @@ DateTime GlobalTimeDate;
 uint8_t TimeNumbers[4]; 
 uint8_t DateNumbers[4]; 
 
-static uint8_t AdjustTime[4] = {0, 0, 0 ,0};
+static uint8_t AdjustTime[4] = {9, 9, 9, 9};
+
+static uint8_t DayInMonth[] = 
+{
+	31,
+	28,
+	31,
+	30,
+	31,
+	30,
+	31,
+	31,
+	30,
+	31,
+	30,
+	31
+};
 
 void RtcInit()
 {
@@ -54,12 +70,15 @@ void CheckForSetTime()
 
 void SetTimeDate()
 {
-	bool IsTime = true, Exit = false, IsHour = true, IsDay = true;
+	bool IsTime = true, Exit = false, IsHour = true, IsMonth = true;
 	uint8_t hour = 0, minute = 0, second = 0, day = 0, month = 0;
 	SettingTime = true;
 	while(!Exit)
 	{
-		ShowNumber(AdjustTime, true);
+		if(IsTime)
+			ShowNumber(AdjustTime, POINTS_ON);
+		else
+			ShowNumber(AdjustTime, POINTS_OFF);
 		switch(ButtonPress)
 		{
 			case UP:
@@ -87,17 +106,7 @@ void SetTimeDate()
 				}
 				else
 				{
-					if(IsDay)
-					{
-						if(day > 1)
-							day--;
-						else
-							day = 31;
-						AdjustTime[0] = day / 10;
-						AdjustTime[1] = day % 10;
-					}
-						
-					else
+					if(IsMonth)
 					{
 						if(month > 1)
 							month--;
@@ -105,6 +114,16 @@ void SetTimeDate()
 							month = 12;
 						AdjustTime[2] = month / 10;
 						AdjustTime[3] = month % 10;
+					}
+						
+					else
+					{
+						if(day > 1)
+							day--;
+						else
+							day = DayInMonth[month-1];
+						AdjustTime[0] = day / 10;
+						AdjustTime[1] = day % 10;
 					}						
 				}
 				break;
@@ -133,17 +152,7 @@ void SetTimeDate()
 				}
 				else
 				{
-					if(IsDay)
-					{
-						if(day < 31)
-							day++;
-						else
-							day = 1;
-						AdjustTime[0] = day / 10;
-						AdjustTime[1] = day % 10;
-					}
-						
-					else
+					if(IsMonth)
 					{
 						if(month < 12)
 							month++;
@@ -151,6 +160,15 @@ void SetTimeDate()
 							month = 1;
 						AdjustTime[2] = month / 10;
 						AdjustTime[3] = month % 10;
+					}	
+					else
+					{
+						if(day < DayInMonth[month-1])
+							day++;
+						else
+							day = 1;
+						AdjustTime[0] = day / 10;
+						AdjustTime[1] = day % 10;
 					}						
 				}
 				break;
@@ -160,14 +178,20 @@ void SetTimeDate()
 					if(IsHour)
 						IsHour = false;
 					else
+					{
 						IsTime = false;
+						ClearDisplay();
+					}
 				}
 				else
 				{
-					if(IsDay)
-						IsDay = false;
+					if(IsMonth)
+						IsMonth = false;
 					else
+					{
 						Exit = true;
+						ClearDisplay();
+					}
 				}
 				break;
 			default:
