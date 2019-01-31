@@ -22,7 +22,14 @@ void(* Reset) (void) = 0;
 void setup()
 {
 	Serial.begin(9600);
-
+	pinMode(MULTI_1, OUTPUT);
+	pinMode(MULTI_2, OUTPUT);
+	pinMode(MULTI_3, OUTPUT);
+	pinMode(MULTI_4, OUTPUT);
+	pinMode(UP_BUTTON,   INPUT);
+	pinMode(DOWN_BUTTON, INPUT);
+	pinMode(OK_BUTTON,   INPUT);	
+	
 #ifdef TASK_LED	
 	xTaskCreate(
 	Led
