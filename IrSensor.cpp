@@ -11,7 +11,7 @@ void ListenSensor()
 	if(SensorOn)
 	{
 		ReadSignal = analogRead(A0);
-		if(ReadSignal > THR_SENSOR)
+		if(ReadSignal > THR_SENSOR && !ShowTimeDate)
 		{
 			ShowTimeDate = true;
 		}

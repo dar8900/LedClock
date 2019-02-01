@@ -9,6 +9,8 @@ bool ShowTimeDate;
 bool SensorOn;
 bool SettingTime;
 bool ResetArduino;
+bool DisableLed;
+
 
 void Led( void *pvParameters );
 void GesEvents( void *pvParameters );
@@ -26,6 +28,7 @@ void setup()
 	pinMode(MULTI_2, OUTPUT);
 	pinMode(MULTI_3, OUTPUT);
 	pinMode(MULTI_4, OUTPUT);
+	pinMode(ENABLE_MUX, OUTPUT);
 	pinMode(UP_BUTTON,   INPUT);
 	pinMode(DOWN_BUTTON, INPUT);
 	pinMode(OK_BUTTON,   INPUT);	

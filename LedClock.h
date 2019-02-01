@@ -11,6 +11,7 @@ extern bool ShowTimeDate;
 extern bool SensorOn;
 extern bool SettingTime;
 extern bool ResetArduino;
+extern bool DisableLed;
 
 typedef enum
 {
@@ -25,6 +26,7 @@ typedef enum
 	UP_BUTTON   = 10,
 	DOWN_BUTTON = 11,
 	OK_BUTTON   = 12,
+	ENABLE_MUX  = 13,
 	MAX_PIN
 	
 }PIN_CONF;

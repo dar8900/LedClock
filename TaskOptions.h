@@ -5,11 +5,11 @@
 
 #define TASK_KEYBOARD
 
-#undef TASK_SENSOR
+#define TASK_SENSOR
 
 #define TASK_TIME
 
-#undef TASK_GES_EVENTS
+#define TASK_GES_EVENTS
 
 
 #endif
