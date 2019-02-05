@@ -19,8 +19,8 @@ typedef enum
 	MULTI_2     =  3,
 	MULTI_3     =  4,
 	MULTI_4     =  5,
-	CLK_DISP_1  =  6,
-	DIO_DISP_1  =  7,
+	CLK_DISP_1  =  6,  
+	DIO_DISP_1  =  7,  
 	CLK_DISP_2  =  8,  // Not Used
 	DIO_DISP_2  =  9,  // Not Used
 	UP_BUTTON   = 10,

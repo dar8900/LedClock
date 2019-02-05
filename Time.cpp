@@ -2,6 +2,7 @@
 #include "KeyBoard.h"
 #include "SegmentDisplay.h"
 #include "LedClock.h"
+#include "Led.h"
 
 static RTC_DS1307 rtc;
 DateTime GlobalTimeDate;
@@ -70,15 +71,25 @@ void CheckForSetTime()
 
 void SetTimeDate()
 {
-	bool IsTime = true, Exit = false, IsHour = true, IsMonth = true;
+	bool Exit = false, IsTime = true, IsHour = true, IsMonth = true, IsDay = false;
 	uint8_t hour = 0, minute = 0, second = 0, day = 0, month = 0;
+	uint16_t year;
 	SettingTime = true;
 	while(!Exit)
 	{
 		if(IsTime)
+		{
 			ShowNumber(AdjustTime, POINTS_ON);
+			if(IsHour)
+				MinuteLed(hour);
+			else
+				MinuteLed(minute);
+		}
 		else
+		{
 			ShowNumber(AdjustTime, POINTS_OFF);
+			RotateLed(10);
+		}
 		switch(ButtonPress)
 		{
 			case UP:
@@ -92,8 +103,7 @@ void SetTimeDate()
 							hour = 23;
 						AdjustTime[0] = hour / 10;
 						AdjustTime[1] = hour % 10;
-					}
-						
+					}	
 					else
 					{
 						if(minute > 0)
@@ -115,8 +125,7 @@ void SetTimeDate()
 						AdjustTime[2] = month / 10;
 						AdjustTime[3] = month % 10;
 					}
-						
-					else
+					else if(IsDay)
 					{
 						if(day > 1)
 							day--;
@@ -124,8 +133,20 @@ void SetTimeDate()
 							day = DayInMonth[month-1];
 						AdjustTime[0] = day / 10;
 						AdjustTime[1] = day % 10;
-					}						
+					}
+					else
+					{
+						if(year > 2019)
+							year--;
+						else
+							year = 2099;
+						AdjustTime[0] = year / 1000;
+						AdjustTime[1] = 0;
+						AdjustTime[2] = (year % 100) / 10;
+						AdjustTime[3] = (year % 100) % 10;						
+					}
 				}
+				ClearDisplay();
 				break;
 			case DOWN:
 				if(IsTime)
@@ -138,8 +159,7 @@ void SetTimeDate()
 							hour = 0;
 						AdjustTime[0] = hour / 10;
 						AdjustTime[1] = hour % 10;
-					}
-						
+					}	
 					else
 					{
 						if(minute < 59)
@@ -161,7 +181,7 @@ void SetTimeDate()
 						AdjustTime[2] = month / 10;
 						AdjustTime[3] = month % 10;
 					}	
-					else
+					else if(IsDay)
 					{
 						if(day < DayInMonth[month-1])
 							day++;
@@ -169,35 +189,64 @@ void SetTimeDate()
 							day = 1;
 						AdjustTime[0] = day / 10;
 						AdjustTime[1] = day % 10;
-					}						
+					}	
+					else
+					{
+						if(year < 2099)
+							year++;
+						else
+							year = 2019;
+						AdjustTime[0] = year / 1000;
+						AdjustTime[1] = 0;
+						AdjustTime[2] = (year % 100) / 10;
+						AdjustTime[3] = (year % 100) % 10;	
+					}
 				}
+				ClearDisplay();
 				break;
 			case OK:
 				if(IsTime)
 				{
 					if(IsHour)
+					{
 						IsHour = false;
+						RotateLed(100);
+					}
 					else
 					{
 						IsTime = false;
 						ClearDisplay();
+						RotateLed(100);
+						RotateLed(100);
 					}
 				}
 				else
 				{
 					if(IsMonth)
+					{
 						IsMonth = false;
+						IsDay = true;
+						RotateLed(100);
+					}
+					else if(IsDay)
+					{
+						IsDay = false;
+						ClearDisplay();
+						RotateLed(100);						
+					}
 					else
 					{
 						Exit = true;
 						ClearDisplay();
+						RotateLed(100);
+						RotateLed(100);
 					}
 				}
 				break;
 			default:
 				break;
 		}
-		OsDelay(100);
+		OsDelay(90);
 	}
 	rtc.adjust(DateTime(2019, month, day, hour, minute, 0)); // anno, mese, giorno, 3h ,0m,0s
 	SettingTime = false;

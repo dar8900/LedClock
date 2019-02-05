@@ -6,10 +6,9 @@
 
 typedef struct 
 {
-	uint8_t Bit1;
-	uint8_t Bit2;
-	uint8_t Bit3;
-	uint8_t Bit4;
+	byte ForAnd;
+	byte ForOr;
+	bool IsOn;
 }MULTIPLEXER_VAR;
 
 typedef enum
@@ -33,54 +32,85 @@ typedef enum
 	MAX_CHANNEL
 }MULTIPLEXER_CHANNEL;
 
-static MULTIPLEXER_VAR MultiplexerChannel[MAX_CHANNEL] = 
+
+
+// static MULTIPLEXER_VAR MultiplexerChannel[MAX_CHANNEL] = 
+// {
+	// {0,  0,  0,  0},
+	// {1,  0,  0,  0},
+	// {0,  1,  0,  0},
+	// {1,  1,  0,  0},
+	// {0,  0,  1,  0},
+	// {1,  0,  1,  0},
+	// {0,  1,  1,  0},
+	// {1,  1,  1,  0},
+	// {0,  0,  0,  1},
+	// {1,  0,  0,  1},
+	// {0,  1,  0,  1},
+	// {1,  1,  0,  1},
+	// {0,  0,  1,  1},
+	// {1,  0,  1,  1},
+	// {0,  1,  1,  1},
+	// {1,  1,  1,  1},
+// };
+
+static MULTIPLEXER_VAR MultiplexerTab[MAX_CHANNEL] = 
 {
-	{LOW,  LOW,  LOW,  LOW},
-	{HIGH, LOW,  LOW,  LOW},
-	{LOW,  HIGH, LOW,  LOW},
-	{HIGH, HIGH, LOW,  LOW},
-	{LOW,  LOW,  HIGH, LOW},
-	{HIGH, LOW,  HIGH, LOW},
-	{LOW,  HIGH, HIGH, LOW},
-	{HIGH, HIGH, HIGH, LOW},
-	{LOW,  LOW,  LOW,  HIGH},
-	{HIGH, LOW,  LOW,  HIGH},
-	{LOW,  HIGH, LOW,  HIGH},
-	{HIGH, HIGH, LOW,  HIGH},
-	{LOW,  LOW,  HIGH, HIGH},
-	{HIGH, LOW,  HIGH, HIGH},
-	{LOW,  HIGH, HIGH, HIGH},
-	{HIGH, HIGH, HIGH, HIGH},
+	{B11000011, B00000000, false},
+	{B11000111, B00000100, false},
+	{B11001011, B00001000, false},
+	{B11001111, B00001100, false},
+	{B11010011, B00010000, false},
+	{B11010111, B00010100, false},
+	{B11011011, B00011000, false},
+	{B11011111, B00011100, false},
+	{B11100011, B00100000, false},
+	{B11100111, B00100100, false},
+	{B11101011, B00101000, false},
+	{B11101111, B00101100, false},
+	{B11110011, B00110000, false},
+	{B11110111, B00110100, false},
+	{B11111011, B00111000, false},
+	{B11111111, B00111100, false},	
 };
 
-
-static void PilotMultiplexer(MULTIPLEXER_VAR MultiState)
+static void ToggleChannelFlagOff(uint8_t StillOnChannel)
 {
-	digitalWrite(MULTI_1, MultiState.Bit1);
-	digitalWrite(MULTI_2, MultiState.Bit2);
-	digitalWrite(MULTI_3, MultiState.Bit3);
-	digitalWrite(MULTI_4, MultiState.Bit4);	
+	uint8_t ChannelIndex = CHANNEL_0;
+	for(ChannelIndex = CHANNEL_0; ChannelIndex < CHANNEL_12; ChannelIndex++)
+	{
+		if(ChannelIndex == StillOnChannel)
+			continue;
+		if(MultiplexerTab[ChannelIndex].IsOn)
+			MultiplexerTab[ChannelIndex].IsOn = false;
+	}
 }
 
-static void RotateLed(uint16_t Delay)
+
+static void PilotMultiplexer(uint8_t ChannelIndex)
 {
-	uint8_t LedIndex = 0;
+	PORTD = (PORTD & MultiplexerTab[ChannelIndex].ForAnd) | MultiplexerTab[ChannelIndex].ForOr;
+	MultiplexerTab[ChannelIndex].IsOn = true;
+}
+
+void RotateLed(uint16_t Delay)
+{
+	uint8_t ChannelIndex = CHANNEL_0;
 	if(!DisableLed)
 	{
-		for(LedIndex = 0; LedIndex <= 11; LedIndex++)
+		for(ChannelIndex = CHANNEL_0; ChannelIndex < CHANNEL_12; ChannelIndex++)
 		{
-			MinuteLed(5 * LedIndex);
+			PilotMultiplexer(ChannelIndex);
 			OsDelay(Delay);
 		}
 	}
 }
 
-
 void LedInit()
 {
 	digitalWrite(ENABLE_MUX, LOW);
 	DisableLed = false;
-	RotateLed(300);
+	RotateLed(50);
 }
 
 
@@ -96,10 +126,28 @@ void ShowDateTimeDisplayBySensor()
 			TogglePoint = !TogglePoint;
 			OsDelay(1000);			
 		}
+		ClearDisplay();
 		ShowNumber(DateNumbers, POINTS_OFF);
 		OsDelay(6000);
 		ShowTimeDate = false;
+		ClearDisplay();
 	}
+}
+
+
+void ShowDateTimeDisplayByButton()
+{
+	bool TogglePoint = POINTS_ON;
+	for(uint8_t i = 0; i < 8; i++)
+	{
+		ShowNumber(TimeNumbers, TogglePoint);
+		TogglePoint = !TogglePoint;
+		OsDelay(1000);			
+	}
+	ClearDisplay();
+	ShowNumber(DateNumbers, POINTS_OFF);
+	OsDelay(6000);
+	ClearDisplay();
 }
 
 void CheckForDisplayTime()
@@ -117,63 +165,59 @@ void CheckForDisplayTime()
 	}
 }
 
-void ShowDateTimeDisplayByButton()
-{
-	bool TogglePoint = POINTS_ON;
-	for(uint8_t i = 0; i < 8; i++)
-	{
-		ShowNumber(TimeNumbers, TogglePoint);
-		TogglePoint = !TogglePoint;
-		OsDelay(1000);			
-	}
-	ShowNumber(DateNumbers, POINTS_OFF);
-	OsDelay(6000);
-}
 
 void MinuteLed(uint8_t WichLed)
 {
+	uint8_t ChannelIndex = CHANNEL_0;
 	if(!DisableLed)
 	{
 		switch(WichLed)
 		{
 			case 0:
-				PilotMultiplexer(MultiplexerChannel[CHANNEL_0]);
+				ChannelIndex = CHANNEL_0;
 				break;
 			case 5:
-				PilotMultiplexer(MultiplexerChannel[CHANNEL_1]);
+				ChannelIndex = CHANNEL_1;
 				break;
 			case 10:
-				PilotMultiplexer(MultiplexerChannel[CHANNEL_2]);
+				ChannelIndex = CHANNEL_2;
 				break;
 			case 15:
-				PilotMultiplexer(MultiplexerChannel[CHANNEL_3]);
+				ChannelIndex = CHANNEL_3;
 				break;
 			case 20:
-				PilotMultiplexer(MultiplexerChannel[CHANNEL_4]);
+				ChannelIndex = CHANNEL_4;
 				break;
 			case 25:
-				PilotMultiplexer(MultiplexerChannel[CHANNEL_5]);
+				ChannelIndex = CHANNEL_5;
 				break;
 			case 30:
-				PilotMultiplexer(MultiplexerChannel[CHANNEL_6]);
+				ChannelIndex = CHANNEL_6;
 				break;
 			case 35:
-				PilotMultiplexer(MultiplexerChannel[CHANNEL_7]);
+				ChannelIndex = CHANNEL_7;
 				break;
 			case 40:
-				PilotMultiplexer(MultiplexerChannel[CHANNEL_8]);
+				ChannelIndex = CHANNEL_8;
 				break;
 			case 45:
-				PilotMultiplexer(MultiplexerChannel[CHANNEL_9]);
+				ChannelIndex = CHANNEL_9;
 				break;
 			case 50:
-				PilotMultiplexer(MultiplexerChannel[CHANNEL_10]);
+				ChannelIndex = CHANNEL_10;
 				break;
 			case 55:
-				PilotMultiplexer(MultiplexerChannel[CHANNEL_11]);
+				ChannelIndex = CHANNEL_11;
 				break;
 			default:
+				ChannelIndex = MAX_CHANNEL;
 				break;				
+		}
+		if(ChannelIndex != MAX_CHANNEL)
+		{
+			if(!MultiplexerTab[ChannelIndex].IsOn)
+				PilotMultiplexer(ChannelIndex);
+			ToggleChannelFlagOff(ChannelIndex);
 		}
 	} 
 }
