@@ -10,4 +10,6 @@ void RtcInit(void);
 void GetTimeDate(void);
 void SetTimeDate(void);
 void CheckForSetTime(void);
+
+void CheckForSetTimeDBG(void);
 #endif

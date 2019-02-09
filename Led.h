@@ -4,6 +4,7 @@
 #include <Arduino.h>
 
 void LedInit(void);
+void BlinkLed(uint8_t Pin);
 void ShowDateTimeDisplayBySensor(void);
 void ShowDateTimeDisplayByButton(void);
 void MinuteLed(uint8_t WichLed);

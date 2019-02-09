@@ -18,6 +18,10 @@ void ReadSensor(void *pvParameters);
 void GetTime(void *pvParameters);
 void KeyBoard(void *pvParameters);
 
+#ifdef TASK_TEST
+void TaskTest( void *pvParameters );
+#endif
+
 //declare reset function @ address 0
 void(* Reset) (void) = 0;
 
@@ -32,6 +36,8 @@ void setup()
 	pinMode(UP_BUTTON,   INPUT);
 	pinMode(DOWN_BUTTON, INPUT);
 	pinMode(OK_BUTTON,   INPUT);	
+	DisplaysInit();
+	RtcInit();
 	
 #ifdef TASK_LED	
 	xTaskCreate(
@@ -82,7 +88,16 @@ void setup()
 	,  1  // Priority
 	,  NULL );
 #endif
-	
+
+#ifdef TASK_TEST	
+	xTaskCreate(
+	TaskTest
+	,  (const portCHAR *) "Test"
+	,  64  // Stack size
+	,  NULL
+	,  1  // Priority
+	,  NULL );
+#endif	
 	
 	// Now the task scheduler, which takes over control of scheduling individual tasks, is automatically started.
 
@@ -98,22 +113,29 @@ void loop()
 void Led(void *pvParameters)  // This is a task.
 {
 	(void) pvParameters;
+	uint16_t Cnt = 100;
 	LedInit();
 	for(;;)
 	{
 		if(!SettingTime)
 		{
-			if(SensorOn)
-				ShowDateTimeDisplayBySensor();
-			else
-				ShowDateTimeDisplayByButton();
-			MinuteLed(GlobalTimeDate.minute());
+			Cnt--;
+			if(Cnt == 0)
+			{
+				Cnt = 100;
+				if(SensorOn)
+					ShowDateTimeDisplayBySensor();
+				else
+					ShowDateTimeDisplayByButton();
+				// MinuteLed(GlobalTimeDate.minute()); /* DBG */
+			}
+			MinuteLed(GlobalTimeDate.second());
 		}
 		else
 		{
 			SetTimeDate();
 		}
-		OsDelay(500);
+		OsDelay(100);
 	}
 }
 #endif
@@ -124,15 +146,15 @@ void GesEvents(void *pvParameters)  // This is a task.
 	(void) pvParameters;
 	for(;;)
 	{
-		if(ResetArduino)
-		{
-			ResetArduino = false;
-			Reset();
-		}
+		// if(ResetArduino)
+		// {
+			// ResetArduino = false;
+			// Reset();
+		// }
 		
 		CheckForSetTime();
 		CheckForDisplayTime();
-		OsDelay(50);
+		OsDelay(100);
 	}
 }
 #endif
@@ -154,11 +176,12 @@ void ReadSensor(void *pvParameters)  // This is a task.
 void GetTime(void *pvParameters)  // This is a task.
 {
 	(void) pvParameters;
-	RtcInit();
 	for(;;)
 	{
 		if(!SettingTime)
+		{
 			GetTimeDate();
+		}
 		OsDelay(500);
 	}
 }
@@ -172,7 +195,31 @@ void KeyBoard(void *pvParameters)  // This is a task.
 	for(;;)
 	{
 		CheckButtons();
-		OsDelay(20);
+		OsDelay(50);
+	}
+}
+#endif
+
+#ifdef TASK_TEST
+void TaskTest(void *pvParameters)  // This is a task.
+{
+	(void) pvParameters;
+	uint8_t Cnt = 5;
+	bool Toggle = true;
+	for(;;)
+	{
+		CheckForSetTimeDBG();
+		if(SettingTime)
+			SetTimeDate();
+		MinuteLed(GlobalTimeDate.second());
+		ShowNumber(TimeNumbers, Toggle);
+		Cnt--;
+		if(Cnt == 0)
+		{
+			Toggle = !Toggle;
+			Cnt = 5;
+		}
+		OsDelay(100);
 	}
 }
 #endif

@@ -74,6 +74,14 @@ static MULTIPLEXER_VAR MultiplexerTab[MAX_CHANNEL] =
 	{B11111111, B00111100, false},	
 };
 
+void BlinkLed(uint8_t Pin)
+{
+	digitalWrite(Pin, HIGH);
+	delay(50);
+	digitalWrite(Pin, LOW);
+	delay(50);
+}
+
 static void ToggleChannelFlagOff(uint8_t StillOnChannel)
 {
 	uint8_t ChannelIndex = CHANNEL_0;
@@ -101,16 +109,29 @@ void RotateLed(uint16_t Delay)
 		for(ChannelIndex = CHANNEL_0; ChannelIndex < CHANNEL_12; ChannelIndex++)
 		{
 			PilotMultiplexer(ChannelIndex);
-			OsDelay(Delay);
+			delay(Delay);
 		}
 	}
 }
 
 void LedInit()
 {
+	uint8_t RollNumb[4] = {0,0,0,0};
+	uint8_t NumbToRoll = 0;
 	digitalWrite(ENABLE_MUX, LOW);
 	DisableLed = false;
-	RotateLed(50);
+	// RotateLed(50);
+	for(NumbToRoll = 0; NumbToRoll < 10; NumbToRoll++)
+	{
+		ShowNumber(RollNumb, true);
+		RollNumb[0] = NumbToRoll;
+		RollNumb[1] = NumbToRoll;
+		RollNumb[2] = NumbToRoll;
+		RollNumb[3] = NumbToRoll;
+		delay(200);
+	}
+	ShowNumber(RollNumb, false);
+	ClearDisplay();
 }
 
 
@@ -142,11 +163,11 @@ void ShowDateTimeDisplayByButton()
 	{
 		ShowNumber(TimeNumbers, TogglePoint);
 		TogglePoint = !TogglePoint;
-		OsDelay(1000);			
+		OsDelay(500);			
 	}
 	ClearDisplay();
 	ShowNumber(DateNumbers, POINTS_OFF);
-	OsDelay(6000);
+	OsDelay(3000);
 	ClearDisplay();
 }
 
@@ -157,10 +178,12 @@ void CheckForDisplayTime()
 		if(ButtonPress == UP && SensorOn)
 		{
 			SensorOn = false;
+			ButtonPress = NO_PRESS;
 		}
 		else if(ButtonPress == UP && !SensorOn)
 		{
-			SensorOn = true;	
+			SensorOn = false; /* DBG deve essere true*/	
+			ButtonPress = NO_PRESS;
 		}
 	}
 }
