@@ -21,8 +21,8 @@ typedef enum
 	MULTI_4     =  5,
 	CLK_DISP_1  =  6,  
 	DIO_DISP_1  =  7,  
-	CLK_DISP_2  =  8,  // Not Used
-	DIO_DISP_2  =  9,  // Not Used
+	NOT_USED_1  =  8,  // Not Used
+	NOT_USED_2  =  9,  // Not Used
 	UP_BUTTON   = 10,
 	DOWN_BUTTON = 11,
 	OK_BUTTON   = 12,

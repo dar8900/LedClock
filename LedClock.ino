@@ -4,6 +4,12 @@
 #include "SegmentDisplay.h"
 #include "KeyBoard.h"
 #include "Time.h"
+#include <EEPROM.h>
+#include "EepromAddr.h"
+#include <avr/io.h>
+#include <avr/wdt.h>
+
+#define Reset() wdt_enable(WDTO_30MS); while(1) {} 
 
 bool ShowTimeDate;
 bool SensorOn;
@@ -11,6 +17,7 @@ bool SettingTime;
 bool ResetArduino;
 bool DisableLed;
 
+uint8_t ResetNumbers[4];
 
 void Led( void *pvParameters );
 void GesEvents( void *pvParameters );
@@ -23,7 +30,48 @@ void TaskTest( void *pvParameters );
 #endif
 
 //declare reset function @ address 0
-void(* Reset) (void) = 0;
+uint16_t ResetNumb;
+
+static void EepromInit()
+{
+	uint8_t ResetValue = 0;
+	ResetValue = EEPROM.read(RESET_ADDR);
+	EEPROM.get(RESET_NUMB_ADDR, ResetNumb);
+	if(ResetValue != 0 || ResetNumb != 0)
+	{
+		if(ResetValue != 0xff)
+		{
+			ResetArduino = true;
+			EEPROM.update(RESET_ADDR, 0);
+			// ResetNumbers[0] = ResetNumb / 1000;
+			// ResetNumbers[1] = (ResetNumb % 1000) / 100;
+			// ResetNumbers[2] = ((ResetNumb % 1000) % 100) / 10 ;
+			// ResetNumbers[3] = (((ResetNumb % 1000) % 100) % 10);
+			// ShowNumber(ResetNumbers, false);
+			// Serial.println(ResetNumb);
+			// OsDelay(3000);
+			ResetArduino = false;
+			
+		}
+		else
+		{
+			Serial.println("First go");
+			EEPROM.put(RESET_NUMB_ADDR, 0);
+		}
+	}
+}
+
+static void CheckForReset()
+{
+	if(ButtonPress == DOWN && !SettingTime)
+	{
+		EEPROM.update(RESET_ADDR, 1);
+		ResetNumb++;
+		EEPROM.put(RESET_NUMB_ADDR, ResetNumb);
+		ButtonPress == NO_PRESS;	
+		// digitalWrite(NOT_USED_1, LOW);
+	}	
+}
 
 void setup()
 {
@@ -35,9 +83,15 @@ void setup()
 	pinMode(ENABLE_MUX, OUTPUT);
 	pinMode(UP_BUTTON,   INPUT);
 	pinMode(DOWN_BUTTON, INPUT);
-	pinMode(OK_BUTTON,   INPUT);	
+	pinMode(OK_BUTTON,   INPUT);
+	
+	// pinMode(NOT_USED_1, OUTPUT);
+	// digitalWrite(NOT_USED_1, HIGH);
+	
 	DisplaysInit();
 	RtcInit();
+	
+	
 	
 #ifdef TASK_LED	
 	xTaskCreate(
@@ -45,7 +99,7 @@ void setup()
 	,  (const portCHAR *)"Led"   // A name just for humans
 	,  128  // This stack size can be checked & adjusted by reading the Stack Highwater
 	,  NULL
-	,  2  // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
+	,  1  // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
 	,  NULL );
 #endif
 
@@ -55,7 +109,7 @@ void setup()
 	,  (const portCHAR *) "GesEvents"
 	,  128  // Stack size
 	,  NULL
-	,  1  // Priority
+	,  3  // Priority
 	,  NULL );
 #endif
 
@@ -65,7 +119,7 @@ void setup()
 	,  (const portCHAR *) "Sensor"
 	,  128  // Stack size
 	,  NULL
-	,  1  // Priority
+	,  2  // Priority
 	,  NULL );
 #endif
 
@@ -85,7 +139,7 @@ void setup()
 	,  (const portCHAR *) "KeyBoard"
 	,  64  // Stack size
 	,  NULL
-	,  1  // Priority
+	,  3  // Priority
 	,  NULL );
 #endif
 
@@ -117,7 +171,7 @@ void Led(void *pvParameters)  // This is a task.
 	LedInit();
 	for(;;)
 	{
-		if(!SettingTime)
+		if(!SettingTime && !ResetArduino)
 		{
 			Cnt--;
 			if(Cnt == 0)
@@ -144,14 +198,10 @@ void Led(void *pvParameters)  // This is a task.
 void GesEvents(void *pvParameters)  // This is a task.
 {
 	(void) pvParameters;
+	EepromInit();
 	for(;;)
 	{
-		// if(ResetArduino)
-		// {
-			// ResetArduino = false;
-			// Reset();
-		// }
-		
+		CheckForReset();
 		CheckForSetTime();
 		CheckForDisplayTime();
 		OsDelay(100);
@@ -165,7 +215,7 @@ void ReadSensor(void *pvParameters)  // This is a task.
 	(void) pvParameters;
 	for(;;)
 	{
-		if(!SettingTime)
+		if(!SettingTime && !ResetArduino)
 			ListenSensor();
 		OsDelay(200);
 	}
