@@ -10,8 +10,9 @@
 extern bool ShowTimeDate;
 extern bool SensorOn;
 extern bool SettingTime;
-extern bool ResetArduino;
+// extern bool ResetArduino;
 extern bool DisableLed;
+extern bool SettingBrightness;
 
 typedef enum
 {

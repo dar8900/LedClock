@@ -7,7 +7,7 @@
 
 typedef enum
 {
-	RESET_ADDR = 0,
+	BRIGHTNESS_ADDR = 0,
 	MAX_ADDR
 }EEPROM_ADDR;
 

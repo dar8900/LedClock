@@ -60,8 +60,16 @@ void GetTimeDate()
 	
 	DateNumbers[0] = GlobalTimeDate.day() / 10;
 	DateNumbers[1] = GlobalTimeDate.day() % 10;
-	DateNumbers[2] = GlobalTimeDate.month() / 10;
-	DateNumbers[3] = GlobalTimeDate.month() % 10;
+	if(GlobalTimeDate.month() < 10)
+	{
+		DateNumbers[2] = DIGIT_OFF;
+		DateNumbers[3] = GlobalTimeDate.month() % 10;
+	}
+	else
+	{
+		DateNumbers[2] = GlobalTimeDate.month() / 10;
+		DateNumbers[3] = GlobalTimeDate.month() % 10;
+	}
 }
 
 void CheckForSetTime()

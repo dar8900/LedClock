@@ -14,8 +14,9 @@
 bool ShowTimeDate;
 bool SensorOn;
 bool SettingTime;
-bool ResetArduino;
+// bool ResetArduino;
 bool DisableLed;
+bool SettingBrightness;
 
 uint8_t ResetNumbers[4];
 
@@ -32,46 +33,46 @@ void TaskTest( void *pvParameters );
 //declare reset function @ address 0
 uint16_t ResetNumb;
 
-static void EepromInit()
-{
-	uint8_t ResetValue = 0;
-	ResetValue = EEPROM.read(RESET_ADDR);
-	EEPROM.get(RESET_NUMB_ADDR, ResetNumb);
-	if(ResetValue != 0 || ResetNumb != 0)
-	{
-		if(ResetValue != 0xff)
-		{
-			ResetArduino = true;
-			EEPROM.update(RESET_ADDR, 0);
-			// ResetNumbers[0] = ResetNumb / 1000;
-			// ResetNumbers[1] = (ResetNumb % 1000) / 100;
-			// ResetNumbers[2] = ((ResetNumb % 1000) % 100) / 10 ;
-			// ResetNumbers[3] = (((ResetNumb % 1000) % 100) % 10);
-			// ShowNumber(ResetNumbers, false);
-			// Serial.println(ResetNumb);
-			// OsDelay(3000);
-			ResetArduino = false;
+// static void EepromInit()
+// {
+	// uint8_t ResetValue = 0;
+	// ResetValue = EEPROM.read(RESET_ADDR);
+	// EEPROM.get(RESET_NUMB_ADDR, ResetNumb);
+	// if(ResetValue != 0 || ResetNumb != 0)
+	// {
+		// if(ResetValue != 0xff)
+		// {
+			// ResetArduino = true;
+			// EEPROM.update(RESET_ADDR, 0);
+			// // ResetNumbers[0] = ResetNumb / 1000;
+			// // ResetNumbers[1] = (ResetNumb % 1000) / 100;
+			// // ResetNumbers[2] = ((ResetNumb % 1000) % 100) / 10 ;
+			// // ResetNumbers[3] = (((ResetNumb % 1000) % 100) % 10);
+			// // ShowNumber(ResetNumbers, false);
+			// // Serial.println(ResetNumb);
+			// // OsDelay(3000);
+			// ResetArduino = false;
 			
-		}
-		else
-		{
-			Serial.println("First go");
-			EEPROM.put(RESET_NUMB_ADDR, 0);
-		}
-	}
-}
+		// }
+		// else
+		// {
+			// Serial.println("First go");
+			// EEPROM.put(RESET_NUMB_ADDR, 0);
+		// }
+	// }
+// }
 
-static void CheckForReset()
-{
-	if(ButtonPress == DOWN && !SettingTime)
-	{
-		EEPROM.update(RESET_ADDR, 1);
-		ResetNumb++;
-		EEPROM.put(RESET_NUMB_ADDR, ResetNumb);
-		ButtonPress == NO_PRESS;	
-		// digitalWrite(NOT_USED_1, LOW);
-	}	
-}
+// static void CheckForReset()
+// {
+	// if(ButtonPress == DOWN && !SettingTime)
+	// {
+		// EEPROM.update(RESET_ADDR, 1);
+		// ResetNumb++;
+		// EEPROM.put(RESET_NUMB_ADDR, ResetNumb);
+		// ButtonPress == NO_PRESS;	
+		// // digitalWrite(NOT_USED_1, LOW);
+	// }	
+// }
 
 void setup()
 {
@@ -171,7 +172,7 @@ void Led(void *pvParameters)  // This is a task.
 	LedInit();
 	for(;;)
 	{
-		if(!SettingTime && !ResetArduino)
+		if(!SettingTime && !SettingBrightness)
 		{
 			Cnt--;
 			if(Cnt == 0)
@@ -185,9 +186,13 @@ void Led(void *pvParameters)  // This is a task.
 			}
 			MinuteLed(GlobalTimeDate.second());
 		}
-		else
+		else if(SettingTime)
 		{
 			SetTimeDate();
+		}
+		else if(SettingBrightness)
+		{
+			SetBrightness();
 		}
 		OsDelay(100);
 	}
@@ -198,12 +203,11 @@ void Led(void *pvParameters)  // This is a task.
 void GesEvents(void *pvParameters)  // This is a task.
 {
 	(void) pvParameters;
-	EepromInit();
 	for(;;)
 	{
-		CheckForReset();
 		CheckForSetTime();
-		CheckForDisplayTime();
+		CheckForSetBrightness();
+		// CheckForDisplayTime(); Deve esserci il sensore
 		OsDelay(100);
 	}
 }
@@ -215,7 +219,7 @@ void ReadSensor(void *pvParameters)  // This is a task.
 	(void) pvParameters;
 	for(;;)
 	{
-		if(!SettingTime && !ResetArduino)
+		if(!SettingTime && !SettingBrightness)
 			ListenSensor();
 		OsDelay(200);
 	}
