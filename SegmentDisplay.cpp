@@ -20,6 +20,11 @@ void ClearDisplay()
 	HourDate.init();
 }
 
+void ClearSingleDigit(uint8_t Digit)
+{
+	HourDate.display(Digit, DIGIT_OFF);
+}
+
 void ShowNumber(uint8_t Numbers[], bool PointOn)
 {
 	HourDate.display(Numbers);
@@ -28,6 +33,8 @@ void ShowNumber(uint8_t Numbers[], bool PointOn)
 	else
 		HourDate.point(POINTS_OFF);
 }
+
+
 
 void BlinkErr()
 {

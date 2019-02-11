@@ -20,10 +20,26 @@
 /*******************************************************************************/
 #include "TM1637.h"
 #include <Arduino.h>
-static int8_t TubeTab[] = {0x3f,0x06,0x5b,0x4f,
-                           0x66,0x6d,0x7d,0x07,
-                           0x7f,0x6f,0x77,0x7c,
-                           0x39,0x5e,0x79,0x71};//0~9,A,b,C,d,E,F                        
+static int8_t TubeTab[] = 
+{
+	0x3f,  // 0
+	0x06,  // 1
+	0x5b,  // 2
+	0x4f,  // 3
+    0x66,  // 4
+	0x6d,  // 5
+	0x7d,  // 6
+	0x07,  // 7
+    0x7f,  // 8
+	0x6f,  // 9
+	0x77,  // A
+	0x7c,  // b
+    0x39,  // C
+	0x5e,  // d
+	0x79,  // E
+	0x71,  // F
+	0x76,  // H
+};                    
 TM1637::TM1637(uint8_t Clk, uint8_t Data)
 {
   Clkpin = Clk;
