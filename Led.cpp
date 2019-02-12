@@ -33,28 +33,6 @@ typedef enum
 }MULTIPLEXER_CHANNEL;
 
 
-/*
-static MULTIPLEXER_VAR MultiplexerChannel[MAX_CHANNEL] = 
-{
-	{0,  0,  0,  0},
-	{1,  0,  0,  0},
-	{0,  1,  0,  0},
-	{1,  1,  0,  0},
-	{0,  0,  1,  0},
-	{1,  0,  1,  0},
-	{0,  1,  1,  0},
-	{1,  1,  1,  0},
-	{0,  0,  0,  1},
-	{1,  0,  0,  1},
-	{0,  1,  0,  1},
-	{1,  1,  0,  1},
-	{0,  0,  1,  1},
-	{1,  0,  1,  1},
-	{0,  1,  1,  1},
-	{1,  1,  1,  1},
-};
-*/
-
 static bool IsLedRotating = false;
 
 static MULTIPLEXER_VAR MultiplexerTab[MAX_CHANNEL] = 

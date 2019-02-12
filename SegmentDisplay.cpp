@@ -68,7 +68,7 @@ void ShowLetter(uint8_t Digit, uint8_t Letter)
 
 void SetBrightness()
 {
-	static bool FirstEnter = true;
+	static bool FirstEnter = true, ChangeBrightness = false;
 	SettingBrightness = true;
 	if(FirstEnter)
 	{
@@ -81,6 +81,11 @@ void SetBrightness()
 		Brightness = EEPROM.read(BRIGHTNESS_ADDR);
 		BrightNumbers[3] = Brightness;
 	}
+	if(ChangeBrightness)
+	{
+		HourDateDisplay.set(Brightness, ADDR_AUTO, STARTADDR);
+		ChangeBrightness = false;
+	}
 	ShowNumber(BrightNumbers, POINTS_OFF);
 	switch(ButtonPress)
 	{
@@ -90,6 +95,7 @@ void SetBrightness()
 			else
 				Brightness = 7;
 			BrightNumbers[3] = Brightness;
+			ChangeBrightness = true;
 			break;
 		case DOWN:
 			if(Brightness < 7)
@@ -97,6 +103,7 @@ void SetBrightness()
 			else
 				Brightness = 0;
 			BrightNumbers[3] = Brightness;
+			ChangeBrightness = true;
 			break;
 		case OK:
 			FirstEnter = true;
@@ -104,6 +111,13 @@ void SetBrightness()
 			HourDateDisplay.init();
 			EEPROM.update(BRIGHTNESS_ADDR, Brightness);
 			SettingBrightness = false;
+			ChangeBrightness = false;
+			ShowLetter(FIRST_DIGIT, NUMBER_5);
+			ShowLetter(SECOND_DIGIT, LETTER_E);
+			ShowLetter(THIRD_DIGIT, LETTER_T);
+			ClearSingleDigit(FOURTH_DIGIT);
+			OsDelay(1000);
+			ClearDisplay();
 			break;
 		default:
 			break;
