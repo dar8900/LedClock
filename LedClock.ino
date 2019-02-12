@@ -33,47 +33,6 @@ void TaskTest( void *pvParameters );
 //declare reset function @ address 0
 uint16_t ResetNumb;
 
-// static void EepromInit()
-// {
-	// uint8_t ResetValue = 0;
-	// ResetValue = EEPROM.read(RESET_ADDR);
-	// EEPROM.get(RESET_NUMB_ADDR, ResetNumb);
-	// if(ResetValue != 0 || ResetNumb != 0)
-	// {
-		// if(ResetValue != 0xff)
-		// {
-			// ResetArduino = true;
-			// EEPROM.update(RESET_ADDR, 0);
-			// // ResetNumbers[0] = ResetNumb / 1000;
-			// // ResetNumbers[1] = (ResetNumb % 1000) / 100;
-			// // ResetNumbers[2] = ((ResetNumb % 1000) % 100) / 10 ;
-			// // ResetNumbers[3] = (((ResetNumb % 1000) % 100) % 10);
-			// // ShowNumber(ResetNumbers, false);
-			// // Serial.println(ResetNumb);
-			// // OsDelay(3000);
-			// ResetArduino = false;
-			
-		// }
-		// else
-		// {
-			// Serial.println("First go");
-			// EEPROM.put(RESET_NUMB_ADDR, 0);
-		// }
-	// }
-// }
-
-// static void CheckForReset()
-// {
-	// if(ButtonPress == DOWN && !SettingTime)
-	// {
-		// EEPROM.update(RESET_ADDR, 1);
-		// ResetNumb++;
-		// EEPROM.put(RESET_NUMB_ADDR, ResetNumb);
-		// ButtonPress == NO_PRESS;	
-		// // digitalWrite(NOT_USED_1, LOW);
-	// }	
-// }
-
 void setup()
 {
 	Serial.begin(9600);
@@ -86,12 +45,9 @@ void setup()
 	pinMode(DOWN_BUTTON, INPUT);
 	pinMode(OK_BUTTON,   INPUT);
 	
-	// pinMode(NOT_USED_1, OUTPUT);
-	// digitalWrite(NOT_USED_1, HIGH);
-	
 	DisplaysInit();
 	RtcInit();
-	
+	LedInit();
 	
 	
 #ifdef TASK_LED	
@@ -169,22 +125,23 @@ void Led(void *pvParameters)  // This is a task.
 {
 	(void) pvParameters;
 	uint16_t Cnt = 100;
-	LedInit();
 	for(;;)
 	{
 		if(!SettingTime && !SettingBrightness)
-		{
-			Cnt--;
-			if(Cnt == 0)
+		{	
+			if(SensorOn)
+				ShowDateTimeDisplayBySensor();
+			else
 			{
-				Cnt = 100;
-				if(SensorOn)
-					ShowDateTimeDisplayBySensor();
-				else
+				Cnt--;
+				if(Cnt == 0)
+				{
+					Cnt = 100;
 					ShowDateTimeDisplayByButton();
-				// MinuteLed(GlobalTimeDate.minute()); /* DBG */
+				}
 			}
-			MinuteLed(GlobalTimeDate.second());
+			// MinuteLed(GlobalTimeDate.minute()); 
+			MinuteLed(GlobalTimeDate.second());  /* DBG */
 		}
 		else if(SettingTime)
 		{
@@ -205,9 +162,35 @@ void GesEvents(void *pvParameters)  // This is a task.
 	(void) pvParameters;
 	for(;;)
 	{
-		CheckForSetTime();
-		CheckForSetBrightness();
-		// CheckForDisplayTime(); Deve esserci il sensore
+		if(!SettingTime && !SettingBrightness)
+		{
+			switch(ButtonPress)
+			{
+				case UP:
+					if(SensorOn)
+					{
+						SensorOn = false;
+					}
+					else if(!SensorOn)
+					{
+						SensorOn = false; /* DBG deve essere true*/	
+					}
+					break;
+				case DOWN:
+					SettingBrightness = true;
+					break;
+				case OK:
+					SettingTime = true;
+					break;
+				default:
+					break;
+			}
+			ButtonPress = NO_PRESS;
+		}
+		if(DisableLed)
+		{
+			digitalWrite(ENABLE_MUX, HIGH);
+		}
 		OsDelay(100);
 	}
 }

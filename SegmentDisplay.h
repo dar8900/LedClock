@@ -5,10 +5,10 @@
 #define POINTS_ON 	true
 #define POINTS_OFF 	false
 
-#define FIRST_DIGIT  0x00
-#define SECOND_DIGIT 0x01
-#define THIRD_DIGIT  0x02
-#define FOURTH_DIGIT 0x03
+#define FIRST_DIGIT 	0
+#define SECOND_DIGIT	1
+#define THIRD_DIGIT 	2
+#define FOURTH_DIGIT	3
 
 
 #define DIGIT_OFF	0x7f

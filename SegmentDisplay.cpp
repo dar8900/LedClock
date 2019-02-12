@@ -7,7 +7,7 @@
 #include <EEPROM.h>
 #include "EepromAddr.h"
 
-TM1637 HourDate(CLK_DISP_1,DIO_DISP_1);
+TM1637 HourDateDisplay(CLK_DISP_1,DIO_DISP_1);
 
 static uint8_t Brightness = 0;
 static uint8_t ErrorNumbr[4] = {0,0,0,0};
@@ -19,8 +19,8 @@ void DisplaysInit()
 	Brightness = EEPROM.read(BRIGHTNESS_ADDR);
 	if(Brightness > 7)
 		Brightness = 7;
-	HourDate.set(Brightness, ADDR_AUTO, STARTADDR);
-	HourDate.init();
+	HourDateDisplay.set(Brightness, ADDR_AUTO, STARTADDR);
+	HourDateDisplay.init();
 	ShowLetter(FIRST_DIGIT,  LETTER_B);
 	ShowLetter(SECOND_DIGIT, LETTER_R);
 	ShowLetter(THIRD_DIGIT,  EQUAL_SIGN);
@@ -31,40 +31,40 @@ void DisplaysInit()
 
 void ClearDisplay()
 {
-	HourDate.init();
+	HourDateDisplay.init();
 }
 
 void ClearSingleDigit(uint8_t Digit)
 {
-	HourDate.display(Digit, DIGIT_OFF);
+	HourDateDisplay.display(Digit, DIGIT_OFF);
 }
 
 void ShowNumber(uint8_t Numbers[], bool PointOn)
 {
-	HourDate.display(Numbers);
+	HourDateDisplay.display(Numbers);
 	if(PointOn == POINTS_ON)
-		HourDate.point(POINTS_ON);
+		HourDateDisplay.point(POINTS_ON);
 	else
-		HourDate.point(POINTS_OFF);
+		HourDateDisplay.point(POINTS_OFF);
 }
 
 
 void ShowLetter(uint8_t Digit, uint8_t Letter)
 {
-	HourDate.display(Digit, Letter);
+	HourDateDisplay.display(Digit, Letter);
 }
 
-void CheckForSetBrightness()
-{
-	if(!SettingBrightness)
-	{
-		if(ButtonPress == DOWN)
-		{
-			SettingBrightness = true;
-			ButtonPress = NO_PRESS;
-		}
-	}
-}
+// void CheckForSetBrightness()
+// {
+	// if(!SettingBrightness)
+	// {
+		// if(ButtonPress == DOWN)
+		// {
+			// SettingBrightness = true;
+			// ButtonPress = NO_PRESS;
+		// }
+	// }
+// }
 
 void SetBrightness()
 {
@@ -100,8 +100,8 @@ void SetBrightness()
 			break;
 		case OK:
 			FirstEnter = true;
-			HourDate.set(Brightness, ADDR_AUTO, STARTADDR);
-			HourDate.init();
+			HourDateDisplay.set(Brightness, ADDR_AUTO, STARTADDR);
+			HourDateDisplay.init();
 			EEPROM.update(BRIGHTNESS_ADDR, Brightness);
 			SettingBrightness = false;
 			break;
@@ -116,11 +116,12 @@ void BlinkErr()
 {
 	for(uint8_t i = 0; i < 3; i++)
 	{
-		ShowNumber(ErrorNumbr, true);
-		OsDelay(500);
+		ShowLetter(FIRST_DIGIT, LETTER_E);
+		ShowLetter(SECOND_DIGIT, LETTER_R);
+		ShowLetter(THIRD_DIGIT, LETTER_R);
+		ClearSingleDigit(FOURTH_DIGIT);
+		delay(250);
 		ClearDisplay();
-		ShowNumber(ErrorNumbr, false);
-		OsDelay(500);
-		ClearDisplay();
+		delay(250);
 	}
 }

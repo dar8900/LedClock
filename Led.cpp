@@ -55,6 +55,8 @@ static MULTIPLEXER_VAR MultiplexerChannel[MAX_CHANNEL] =
 };
 */
 
+static bool IsLedRotating = false;
+
 static MULTIPLEXER_VAR MultiplexerTab[MAX_CHANNEL] = 
 {
 	{B11000011, B00000000, false},
@@ -107,11 +109,13 @@ void RotateLed(uint16_t Delay)
 	uint8_t ChannelIndex = CHANNEL_0;
 	if(!DisableLed)
 	{
+		IsLedRotating = true;
 		for(ChannelIndex = CHANNEL_0; ChannelIndex < CHANNEL_12; ChannelIndex++)
 		{
 			PilotMultiplexer(ChannelIndex);
 			delay(Delay);
 		}
+		IsLedRotating = false;
 	}
 }
 
@@ -129,10 +133,15 @@ void LedInit()
 		RollNumb[1] = NumbToRoll;
 		RollNumb[2] = NumbToRoll;
 		RollNumb[3] = NumbToRoll;
-		delay(200);
+		delay(100);
 	}
-	ShowNumber(RollNumb, false);
-	ClearDisplay();
+	for(NumbToRoll = 0; NumbToRoll < 3; NumbToRoll++)
+	{
+		ShowNumber(RollNumb, true);
+		delay(50);
+		ClearDisplay();
+		delay(50);
+	}
 }
 
 
@@ -146,11 +155,11 @@ void ShowDateTimeDisplayBySensor()
 		{
 			ShowNumber(TimeNumbers, TogglePoint);
 			TogglePoint = !TogglePoint;
-			OsDelay(1000);			
+			OsDelay(500);			
 		}
 		ClearDisplay();
 		ShowNumber(DateNumbers, POINTS_OFF);
-		OsDelay(6000);
+		OsDelay(3000);
 		ShowTimeDate = false;
 		ClearDisplay();
 	}
@@ -172,28 +181,11 @@ void ShowDateTimeDisplayByButton()
 	ClearDisplay();
 }
 
-void CheckForDisplayTime()
-{
-	if(!SettingTime)
-	{
-		if(ButtonPress == UP && SensorOn)
-		{
-			SensorOn = false;
-			ButtonPress = NO_PRESS;
-		}
-		else if(ButtonPress == UP && !SensorOn)
-		{
-			SensorOn = false; /* DBG deve essere true*/	
-			ButtonPress = NO_PRESS;
-		}
-	}
-}
-
 
 void MinuteLed(uint8_t WichLed)
 {
 	uint8_t ChannelIndex = CHANNEL_0;
-	if(!DisableLed)
+	if(!DisableLed && !IsLedRotating)
 	{
 		switch(WichLed)
 		{

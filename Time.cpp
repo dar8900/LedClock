@@ -27,17 +27,19 @@ static uint8_t DayInMonth[] =
 	31
 };
 
+static bool IsTime = true;
+static bool IsHour = true, IsMonth = true, IsDay = false, RefreshDisplay = true;
+static uint8_t hour = 0, minute = 0, second = 0, day = 0, month = 0;
+static uint16_t year = 2019;
+
 void RtcInit()
 {
 	if (! rtc.begin()) 
 	{
-		uint8_t Cnt = 3;
-		while(Cnt)
+		while(1)
 		{
 			BlinkErr();
-			OsDelay(500);
-			Cnt--;
-			// ResetArduino = true;
+			delay(500);
 		}
 	}
 	if (! rtc.isrunning())
@@ -45,6 +47,7 @@ void RtcInit()
 		// Serial.println("Setting Time");
 		SensorOn = false;
 		BlinkErr();
+		SettingTime = true;
 		// SetTimeDate();
 		// SensorOn = true;
 	}
@@ -58,8 +61,16 @@ void GetTimeDate()
 	TimeNumbers[2] = GlobalTimeDate.minute() / 10;
 	TimeNumbers[3] = GlobalTimeDate.minute() % 10;
 	
-	DateNumbers[0] = GlobalTimeDate.day() / 10;
-	DateNumbers[1] = GlobalTimeDate.day() % 10;
+	if(GlobalTimeDate.day() < 10)
+	{
+		DateNumbers[0] = DIGIT_OFF;
+		DateNumbers[1] = GlobalTimeDate.day() % 10;
+	}
+	else
+	{
+		DateNumbers[0] = GlobalTimeDate.day() / 10;
+		DateNumbers[1] = GlobalTimeDate.day() % 10;
+	}
 	if(GlobalTimeDate.month() < 10)
 	{
 		DateNumbers[2] = DIGIT_OFF;
@@ -72,38 +83,9 @@ void GetTimeDate()
 	}
 }
 
-void CheckForSetTime()
-{
-	if(!SettingTime)
-	{
-		if(ButtonPress == OK)
-		{
-			SettingTime = true;
-			ButtonPress = NO_PRESS;
-		}
-	}
-}
-
-void CheckForSetTimeDBG()
-{
-	if(!SettingTime)
-	{
-		if(ButtonPress == OK)
-		{
-			SettingTime = true;
-			ButtonPress = NO_PRESS;
-		}
-	}
-}
-
 void SetTimeDate()
 { 
-	static bool IsTime = true;
-	static bool IsHour = true, IsMonth = true, IsDay = false, RefreshDisplay = true;
-	static uint8_t hour = 0, minute = 0, second = 0, day = 0, month = 0;
-	static uint16_t year = 2019;
 	SettingTime = true;
-	
 	if(IsTime)
 	{
 		if(RefreshDisplay)
