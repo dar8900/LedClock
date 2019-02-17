@@ -115,7 +115,7 @@ void LedInit()
 	}
 	for(NumbToRoll = 0; NumbToRoll < 3; NumbToRoll++)
 	{
-		ShowNumber(RollNumb, true);
+		ShowNumber(RollNumb, false);
 		delay(50);
 		ClearDisplay();
 		delay(50);
@@ -158,7 +158,6 @@ void ShowDateTimeDisplayByButton()
 	OsDelay(3000);
 	ClearDisplay();
 }
-
 
 void MinuteLed(uint8_t WichLed)
 {

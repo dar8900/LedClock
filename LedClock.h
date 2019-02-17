@@ -13,6 +13,8 @@ extern bool SettingTime;
 // extern bool ResetArduino;
 extern bool DisableLed;
 extern bool SettingBrightness;
+extern bool SettingTimer;
+extern bool TimerIsSet;
 
 typedef enum
 {

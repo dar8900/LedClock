@@ -39,6 +39,11 @@ void ClearSingleDigit(uint8_t Digit)
 	HourDateDisplay.display(Digit, DIGIT_OFF);
 }
 
+void ClearPoint()
+{
+	HourDateDisplay.point(POINTS_OFF);
+}
+
 void ShowNumber(uint8_t Numbers[], bool PointOn)
 {
 	HourDateDisplay.display(Numbers);
@@ -53,18 +58,6 @@ void ShowLetter(uint8_t Digit, uint8_t Letter)
 {
 	HourDateDisplay.display(Digit, Letter);
 }
-
-// void CheckForSetBrightness()
-// {
-	// if(!SettingBrightness)
-	// {
-		// if(ButtonPress == DOWN)
-		// {
-			// SettingBrightness = true;
-			// ButtonPress = NO_PRESS;
-		// }
-	// }
-// }
 
 void SetBrightness()
 {
@@ -116,6 +109,7 @@ void SetBrightness()
 			ShowLetter(SECOND_DIGIT, LETTER_E);
 			ShowLetter(THIRD_DIGIT, LETTER_T);
 			ClearSingleDigit(FOURTH_DIGIT);
+			ButtonPress = NO_PRESS;
 			OsDelay(1000);
 			ClearDisplay();
 			break;
@@ -138,4 +132,30 @@ void BlinkErr()
 		ClearDisplay();
 		delay(250);
 	}
+}
+
+void BlinkWord(uint8_t FirstLetter, uint8_t SecondLetter, uint8_t ThirdLetter, uint8_t FourthLetter)
+{
+	for(uint8_t i = 0; i < 3; i++)
+	{
+		if(FirstLetter != DIGIT_OFF)
+			ShowLetter(FIRST_DIGIT, FirstLetter);
+		else
+			ClearSingleDigit(FirstLetter);
+		if(SecondLetter != DIGIT_OFF)
+			ShowLetter(SECOND_DIGIT, SecondLetter);
+		else
+			ClearSingleDigit(FirstLetter);
+		if(ThirdLetter != DIGIT_OFF)
+			ShowLetter(THIRD_DIGIT, ThirdLetter);
+		else
+			ClearSingleDigit(ThirdLetter);
+		if(FourthLetter != DIGIT_OFF)
+			ShowLetter(FOURTH_DIGIT, FourthLetter);
+		else
+			ClearSingleDigit(FourthLetter);
+		delay(250);
+		ClearDisplay();
+		delay(250);
+	}		 
 }

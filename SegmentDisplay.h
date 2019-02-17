@@ -45,17 +45,20 @@ typedef enum
 	LETTER_P,
 	LETTER_R,
 	LETTER_T,
+	LETTER_U,
 	EQUAL_SIGN,
 	MAX_LETTER
 }DISPLAY_LETTER;
 
 void DisplaysInit(void);
 void ClearDisplay(void);
+void ClearPoint(void);
 void ClearSingleDigit(uint8_t Digit);
 void ShowNumber(uint8_t Numbers[], bool PointOn);
 void ShowLetter(uint8_t Digit, uint8_t Letter);
 void BlinkErr(void);
 void CheckForSetBrightness(void);
 void SetBrightness(void);
+void BlinkWord(uint8_t FirstLetter, uint8_t SecondLetter, uint8_t ThirdLetter, uint8_t FourthLetter);
 
 #endif

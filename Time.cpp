@@ -8,6 +8,11 @@ static RTC_DS1307 rtc;
 DateTime GlobalTimeDate;
 uint8_t TimeNumbers[4]; 
 uint8_t DateNumbers[4]; 
+uint8_t TimerNumbers[4];
+uint16_t MinuteTimer;
+uint16_t MinuteToSecond;
+static uint8_t NewSecond, OldSecond;
+bool SecondTick;
 
 static uint8_t AdjustTime[4] = {9, 9, 9, 9};
 
@@ -60,6 +65,12 @@ void GetTimeDate()
 	TimeNumbers[1] = GlobalTimeDate.hour() % 10;
 	TimeNumbers[2] = GlobalTimeDate.minute() / 10;
 	TimeNumbers[3] = GlobalTimeDate.minute() % 10;
+	NewSecond = GlobalTimeDate.second();
+	if(NewSecond != OldSecond)
+	{
+		SecondTick = true;
+		OldSecond = NewSecond;
+	}
 	
 	if(GlobalTimeDate.day() < 10)
 	{
@@ -288,5 +299,84 @@ void SetTimeDate()
 			break;
 		default:
 			break;
+	}
+	ButtonPress = NO_PRESS;
+}
+
+
+void SetTimer()
+{
+	static bool RefreshDisplay = true;
+	ShowNumber(TimerNumbers, false);
+	
+	switch(ButtonPress)
+	{
+		case UP:
+			if(MinuteTimer > 0)
+				MinuteTimer--;
+			else
+				MinuteTimer = 99;
+			RefreshDisplay = true;
+			break;
+		case DOWN:
+			if(MinuteTimer < 99)
+				MinuteTimer++;
+			else
+				MinuteTimer = 0;
+			RefreshDisplay = true;
+			break;
+		case OK:
+			RefreshDisplay = false;
+			TimerIsSet = true;
+			MinuteToSecond = MinuteTimer * SECOND_IN_MINUTE;
+			SettingTimer = false;
+			ClearDisplay();
+			break;
+		default:
+			break;
+	}
+	if(RefreshDisplay)
+	{
+		TimerNumbers[0] = DIGIT_OFF;
+		TimerNumbers[1] = DIGIT_OFF;
+		TimerNumbers[2] = (MinuteTimer % 100) / 10;
+		TimerNumbers[3] = (MinuteTimer % 100) % 10;
+		RefreshDisplay = false;
+	}
+	ButtonPress = NO_PRESS;
+}
+
+void StartTimer()
+{
+	static bool StopTimer = false;
+	if(SecondTick && MinuteToSecond > 0)
+	{
+		SecondTick = false;
+		MinuteToSecond--;
+		StopTimer = false;
+	}
+	if(MinuteToSecond == 0)
+	{
+		StopTimer = true;
+		BlinkWord(LETTER_E, LETTER_N, LETTER_D, DIGIT_OFF);
+	}
+	if(!StopTimer)
+	{
+		if(MinuteTimer < 10)
+		{
+			TimerNumbers[0] = DIGIT_OFF;
+			TimerNumbers[1] = MinuteToSecond / 60;
+			TimerNumbers[2] = (MinuteToSecond % 60) / 10;
+			TimerNumbers[3] = (MinuteToSecond % 60) % 10;
+			ShowNumber(TimerNumbers, true);
+		}
+		else
+		{
+			TimerNumbers[0] = (MinuteToSecond / 60) / 10;
+			TimerNumbers[1] = (MinuteToSecond / 60) % 10;
+			TimerNumbers[2] = (MinuteToSecond % 60) / 10;
+			TimerNumbers[3] = (MinuteToSecond % 60) % 10;
+			ShowNumber(TimerNumbers, true);
+		}
 	}
 }

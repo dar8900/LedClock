@@ -17,6 +17,10 @@ bool SettingTime;
 // bool ResetArduino;
 bool DisableLed;
 bool SettingBrightness;
+bool SettingTimer;
+bool StartingTimer;
+bool TimerIsSet;
+bool ShowAlwaysTimeDisplay;
 
 uint8_t ResetNumbers[4];
 
@@ -124,20 +128,34 @@ void loop()
 void Led(void *pvParameters)  // This is a task.
 {
 	(void) pvParameters;
-	uint16_t Cnt = 100;
+	uint16_t Cnt = 0;
+	bool TogglePoint = false;
 	for(;;)
 	{
-		if(!SettingTime && !SettingBrightness)
+		if(!SettingTime && !SettingBrightness && !SettingTimer && !StartingTimer)
 		{	
-			if(SensorOn)
-				ShowDateTimeDisplayBySensor();
+			if(!ShowAlwaysTimeDisplay)
+			{
+				if(SensorOn)
+					ShowDateTimeDisplayBySensor();
+				else
+				{
+					Cnt++;
+					if(Cnt == 100)
+					{
+						Cnt = 0;
+						ShowDateTimeDisplayByButton();
+					}
+				}
+			}
 			else
 			{
-				Cnt--;
-				if(Cnt == 0)
+				Cnt++;
+				ShowNumber(TimeNumbers, TogglePoint);
+				if(Cnt >= 5)
 				{
-					Cnt = 100;
-					ShowDateTimeDisplayByButton();
+					TogglePoint = !TogglePoint;
+					Cnt = 0;
 				}
 			}
 			// MinuteLed(GlobalTimeDate.minute()); 
@@ -151,6 +169,16 @@ void Led(void *pvParameters)  // This is a task.
 		{
 			SetBrightness();
 		}
+		else if(SettingTimer)
+		{
+			SetTimer();
+		}
+		else if(StartingTimer)
+		{
+			StartTimer();
+			// MinuteLed(GlobalTimeDate.minute()); 
+			MinuteLed(GlobalTimeDate.second());  /* DBG */
+		}
 		OsDelay(100);
 	}
 }
@@ -160,9 +188,10 @@ void Led(void *pvParameters)  // This is a task.
 void GesEvents(void *pvParameters)  // This is a task.
 {
 	(void) pvParameters;
+	ButtonPress = NO_PRESS;
 	for(;;)
 	{
-		if(!SettingTime && !SettingBrightness)
+		if(!SettingTime && !SettingBrightness && !SettingTimer && !StartingTimer)
 		{
 			switch(ButtonPress)
 			{
@@ -170,10 +199,12 @@ void GesEvents(void *pvParameters)  // This is a task.
 					if(SensorOn)
 					{
 						SensorOn = false;
+						BlinkWord(NUMBER_8, LETTER_U, LETTER_T, LETTER_N);
 					}
-					else if(!SensorOn)
+					else
 					{
-						SensorOn = false; /* DBG deve essere true*/	
+						SensorOn = true;
+						BlinkWord(NUMBER_5, LETTER_E, LETTER_N, NUMBER_5);
 					}
 					break;
 				case DOWN:
@@ -182,10 +213,58 @@ void GesEvents(void *pvParameters)  // This is a task.
 				case OK:
 					SettingTime = true;
 					break;
+				case LONG_UP:
+					if(!ShowAlwaysTimeDisplay)
+					{
+						ShowAlwaysTimeDisplay = true;
+						BlinkWord(LETTER_T, LETTER_I, LETTER_N, LETTER_E);
+					}
+					else
+					{
+						ClearPoint();
+						ClearDisplay();
+						ShowAlwaysTimeDisplay = false;
+						OsDelay(1000);
+					}
+					break;
+				case LONG_DOWN:
+					BlinkWord(LETTER_T, LETTER_N, LETTER_R, DIGIT_OFF);
+					ClearPoint();
+					SettingTimer = true;						
+					break;
+				case LONG_OK:
+					if(TimerIsSet)
+					{
+						ClearDisplay();
+						ClearPoint();
+						BlinkWord(NUMBER_5, LETTER_T, LETTER_A, LETTER_R);
+						StartingTimer = true;
+					}
+					else
+					{
+						ClearDisplay();
+						BlinkWord(NUMBER_5, LETTER_E, LETTER_T, DIGIT_OFF);
+						BlinkWord(LETTER_T, LETTER_N, LETTER_R, DIGIT_OFF);
+					}
+					break;
 				default:
 					break;
 			}
 			ButtonPress = NO_PRESS;
+		}
+		else if(StartingTimer)
+		{
+			if(ButtonPress == LONG_OK)
+			{
+				ClearDisplay();
+				ClearPoint();
+				BlinkWord(NUMBER_5, LETTER_T, NUMBER_0, LETTER_P);
+				MinuteTimer = 0;
+				MinuteToSecond = 0;	
+				ButtonPress = NO_PRESS;
+				StartingTimer = false;
+				TimerIsSet = false;	
+			}	
 		}
 		if(DisableLed)
 		{
@@ -202,7 +281,7 @@ void ReadSensor(void *pvParameters)  // This is a task.
 	(void) pvParameters;
 	for(;;)
 	{
-		if(!SettingTime && !SettingBrightness)
+		if(!SettingTime && !SettingBrightness && !SettingTimer && !StartingTimer)
 			ListenSensor();
 		OsDelay(200);
 	}
@@ -232,7 +311,7 @@ void KeyBoard(void *pvParameters)  // This is a task.
 	for(;;)
 	{
 		CheckButtons();
-		OsDelay(50);
+		OsDelay(25);
 	}
 }
 #endif

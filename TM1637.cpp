@@ -46,7 +46,8 @@ static int8_t TubeTab[] =
 	0x73,  // P   21
 	0x50,  // r   22
 	0x78,  // t   23
-	0x48,  // =   24
+	0x1c,  // u   24
+	0x48,  // =   25
 };                   
 TM1637::TM1637(uint8_t Clk, uint8_t Data)
 {
