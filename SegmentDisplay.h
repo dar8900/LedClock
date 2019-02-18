@@ -52,7 +52,6 @@ typedef enum
 
 void DisplaysInit(void);
 void ClearDisplay(void);
-void ClearPoint(void);
 void ClearSingleDigit(uint8_t Digit);
 void ShowNumber(uint8_t Numbers[], bool PointOn);
 void ShowLetter(uint8_t Digit, uint8_t Letter);

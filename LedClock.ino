@@ -221,7 +221,6 @@ void GesEvents(void *pvParameters)  // This is a task.
 					}
 					else
 					{
-						ClearPoint();
 						ClearDisplay();
 						ShowAlwaysTimeDisplay = false;
 						OsDelay(1000);
@@ -229,14 +228,12 @@ void GesEvents(void *pvParameters)  // This is a task.
 					break;
 				case LONG_DOWN:
 					BlinkWord(LETTER_T, LETTER_N, LETTER_R, DIGIT_OFF);
-					ClearPoint();
 					SettingTimer = true;						
 					break;
 				case LONG_OK:
 					if(TimerIsSet)
 					{
 						ClearDisplay();
-						ClearPoint();
 						BlinkWord(NUMBER_5, LETTER_T, LETTER_A, LETTER_R);
 						StartingTimer = true;
 					}
@@ -257,7 +254,6 @@ void GesEvents(void *pvParameters)  // This is a task.
 			if(ButtonPress == LONG_OK)
 			{
 				ClearDisplay();
-				ClearPoint();
 				BlinkWord(NUMBER_5, LETTER_T, NUMBER_0, LETTER_P);
 				MinuteTimer = 0;
 				MinuteToSecond = 0;	

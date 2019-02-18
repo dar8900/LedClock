@@ -32,16 +32,12 @@ void DisplaysInit()
 void ClearDisplay()
 {
 	HourDateDisplay.init();
+	HourDateDisplay.point(POINTS_OFF);
 }
 
 void ClearSingleDigit(uint8_t Digit)
 {
 	HourDateDisplay.display(Digit, DIGIT_OFF);
-}
-
-void ClearPoint()
-{
-	HourDateDisplay.point(POINTS_OFF);
 }
 
 void ShowNumber(uint8_t Numbers[], bool PointOn)
