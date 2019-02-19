@@ -11,13 +11,10 @@ void ListenSensor()
 	if(SensorOn)
 	{
 		ReadSignal = analogRead(A0);
-		if(ReadSignal > THR_SENSOR && !ShowTimeDate)
-		{
-			ShowTimeDate = true;
-		}
-		else
-		{
-			ShowTimeDate = false;
-		}
+		Serial.println(ReadSignal); // PER DBG
+		// if(ReadSignal > THR_SENSOR && !ShowTimeDate)
+		// {
+			// ShowTimeDate = true;
+		// }
 	}
 }

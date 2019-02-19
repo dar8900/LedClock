@@ -5,7 +5,7 @@
 
 #define TASK_KEYBOARD
 
-#undef TASK_SENSOR
+#define TASK_SENSOR
 
 #define TASK_TIME
 

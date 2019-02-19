@@ -208,10 +208,22 @@ void GesEvents(void *pvParameters)  // This is a task.
 					}
 					break;
 				case DOWN:
-					SettingBrightness = true;
+					BlinkWord(LETTER_T, LETTER_N, LETTER_R, DIGIT_OFF);
+					SettingTimer = true;
 					break;
 				case OK:
-					SettingTime = true;
+					if(TimerIsSet)
+					{
+						ClearDisplay();
+						BlinkWord(NUMBER_5, LETTER_T, LETTER_R, LETTER_T);
+						StartingTimer = true;
+					}
+					else
+					{
+						ClearDisplay();
+						BlinkWord(NUMBER_5, LETTER_E, LETTER_T, DIGIT_OFF);
+						BlinkWord(LETTER_T, LETTER_N, LETTER_R, DIGIT_OFF);
+					}
 					break;
 				case LONG_UP:
 					if(!ShowAlwaysTimeDisplay)
@@ -227,22 +239,10 @@ void GesEvents(void *pvParameters)  // This is a task.
 					}
 					break;
 				case LONG_DOWN:
-					BlinkWord(LETTER_T, LETTER_N, LETTER_R, DIGIT_OFF);
-					SettingTimer = true;						
+					SettingBrightness = true;						
 					break;
 				case LONG_OK:
-					if(TimerIsSet)
-					{
-						ClearDisplay();
-						BlinkWord(NUMBER_5, LETTER_T, LETTER_A, LETTER_R);
-						StartingTimer = true;
-					}
-					else
-					{
-						ClearDisplay();
-						BlinkWord(NUMBER_5, LETTER_E, LETTER_T, DIGIT_OFF);
-						BlinkWord(LETTER_T, LETTER_N, LETTER_R, DIGIT_OFF);
-					}
+					SettingTime = true;
 					break;
 				default:
 					break;
@@ -251,7 +251,7 @@ void GesEvents(void *pvParameters)  // This is a task.
 		}
 		else if(StartingTimer)
 		{
-			if(ButtonPress == LONG_OK)
+			if(ButtonPress == OK)
 			{
 				ClearDisplay();
 				BlinkWord(NUMBER_5, LETTER_T, NUMBER_0, LETTER_P);
