@@ -128,7 +128,7 @@ void ShowDateTimeDisplayBySensor()
 	if(ShowTimeDate)
 	{
 		bool TogglePoint = POINTS_ON;
-		RotateLed(80);
+		//RotateLed(80);
 		for(uint8_t i = 0; i < 8; i++)
 		{
 			ShowNumber(TimeNumbers, TogglePoint);

@@ -1,8 +1,7 @@
 #include "IrSensor.h"
 #include "LedClock.h"
 
-#define THR_SENSOR	512
-
+#define THR_SENSOR	1000
 
 
 void ListenSensor()
@@ -11,10 +10,9 @@ void ListenSensor()
 	if(SensorOn)
 	{
 		ReadSignal = analogRead(A0);
-		Serial.println(ReadSignal); // PER DBG
-		// if(ReadSignal > THR_SENSOR && !ShowTimeDate)
-		// {
-			// ShowTimeDate = true;
-		// }
+		if(ReadSignal < THR_SENSOR && !ShowTimeDate)
+		{
+			ShowTimeDate = true;
+		}
 	}
 }

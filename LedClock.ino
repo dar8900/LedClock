@@ -143,8 +143,8 @@ void Led(void *pvParameters)  // This is a task.
 					Cnt++;
 					if(Cnt == 100)
 					{
-						Cnt = 0;
 						ShowDateTimeDisplayByButton();
+						Cnt = 0;
 					}
 				}
 			}
