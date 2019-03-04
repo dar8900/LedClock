@@ -48,6 +48,7 @@ void setup()
 	pinMode(UP_BUTTON,   INPUT);
 	pinMode(DOWN_BUTTON, INPUT);
 	pinMode(OK_BUTTON,   INPUT);
+	// pinMode(SENSOR_INPUT,   INPUT);
 	
 	DisplaysInit();
 	RtcInit();
@@ -141,7 +142,7 @@ void Led(void *pvParameters)  // This is a task.
 				else
 				{
 					Cnt++;
-					if(Cnt == 100)
+					if(Cnt == 5000)
 					{
 						ShowDateTimeDisplayByButton();
 						Cnt = 0;
@@ -193,6 +194,7 @@ void GesEvents(void *pvParameters)  // This is a task.
 	{
 		if(!SettingTime && !SettingBrightness && !SettingTimer && !StartingTimer)
 		{
+			ListenSensor();
 			switch(ButtonPress)
 			{
 				case UP:

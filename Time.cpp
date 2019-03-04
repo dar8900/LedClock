@@ -8,13 +8,14 @@ static RTC_DS1307 rtc;
 DateTime GlobalTimeDate;
 uint8_t TimeNumbers[4]; 
 uint8_t DateNumbers[4]; 
-uint8_t TimerNumbers[4];
+uint8_t TimerNumbers[4] = {DIGIT_OFF, DIGIT_OFF, 0, 0};
 uint16_t MinuteTimer;
 uint16_t MinuteToSecond;
 static uint8_t NewSecond, OldSecond;
 bool SecondTick;
 
 static uint8_t AdjustTime[4] = {9, 9, 9, 9};
+
 
 static uint8_t DayInMonth[] = 
 {
