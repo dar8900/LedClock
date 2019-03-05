@@ -142,7 +142,8 @@ void Led(void *pvParameters)  // This is a task.
 				else
 				{
 					Cnt++;
-					if(Cnt == 5000)
+					// Ogni 5 min
+					if(Cnt == 3000)
 					{
 						ShowDateTimeDisplayByButton();
 						Cnt = 0;
@@ -169,6 +170,8 @@ void Led(void *pvParameters)  // This is a task.
 		else if(SettingBrightness)
 		{
 			SetBrightness();
+			// MinuteLed(GlobalTimeDate.minute()); 
+			MinuteLed(GlobalTimeDate.second());  /* DBG */
 		}
 		else if(SettingTimer)
 		{
