@@ -18,10 +18,10 @@ extern bool TimerIsSet;
 
 typedef enum
 {
-	MULTI_1     	=  2,
-	MULTI_2     	=  3,
-	MULTI_3     	=  4,
-	MULTI_4     	=  5,
+	MULTI_1     	=  5,
+	MULTI_2     	=  4,
+	MULTI_3     	=  3,
+	MULTI_4     	=  2,
 	CLK_DISP_1  	=  6,  
 	DIO_DISP_1  	=  7,  
 	SENSOR_INPUT    =  8, 

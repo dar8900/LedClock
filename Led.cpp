@@ -6,8 +6,10 @@
 
 typedef struct 
 {
-	byte ForAnd;
-	byte ForOr;
+	uint8_t State_1;
+	uint8_t State_2;
+	uint8_t State_3;
+	uint8_t State_4;
 	bool IsOn;
 }MULTIPLEXER_VAR;
 
@@ -37,23 +39,44 @@ static bool IsLedRotating = false;
 
 static MULTIPLEXER_VAR MultiplexerTab[MAX_CHANNEL] = 
 {
-	{B11000011, B00000000, false},
-	{B11000111, B00000100, false},
-	{B11001011, B00001000, false},
-	{B11001111, B00001100, false},
-	{B11010011, B00010000, false},
-	{B11010111, B00010100, false},
-	{B11011011, B00011000, false},
-	{B11011111, B00011100, false},
-	{B11100011, B00100000, false},
-	{B11100111, B00100100, false},
-	{B11101011, B00101000, false},
-	{B11101111, B00101100, false},
-	{B11110011, B00110000, false},
-	{B11110111, B00110100, false},
-	{B11111011, B00111000, false},
-	{B11111111, B00111100, false},	
+	{0,  0,  0,  0, false},
+	{1,  0,  0,  0, false},
+	{0,  1,  0,  0, false},
+	{1,  1,  0,  0, false},
+	{0,  0,  1,  0, false},
+	{1,  0,  1,  0, false},
+	{0,  1,  1,  0, false},
+	{1,  1,  1,  0, false},
+	{0,  0,  0,  1, false},
+	{1,  0,  0,  1, false},
+	{0,  1,  0,  1, false},
+	{1,  1,  0,  1, false},
+	{0,  0,  1,  1, false},
+	{1,  0,  1,  1, false},
+	{0,  1,  1,  1, false},
+	{1,  1,  1,  1, false},
 };
+
+
+// static MULTIPLEXER_VAR MultiplexerTab[MAX_CHANNEL] = 
+// {
+	// {B11000011, B00000000, false},
+	// {B11000111, B00000100, false},
+	// {B11001011, B00001000, false},
+	// {B11001111, B00001100, false},
+	// {B11010011, B00010000, false},
+	// {B11010111, B00010100, false},
+	// {B11011011, B00011000, false},
+	// {B11011111, B00011100, false},
+	// {B11100011, B00100000, false},
+	// {B11100111, B00100100, false},
+	// {B11101011, B00101000, false},
+	// {B11101111, B00101100, false},
+	// {B11110011, B00110000, false},
+	// {B11110111, B00110100, false},
+	// {B11111011, B00111000, false},
+	// {B11111111, B00111100, false},	
+// };
 
 void BlinkLed(uint8_t Pin)
 {
@@ -78,7 +101,12 @@ static void ToggleChannelFlagOff(uint8_t StillOnChannel)
 
 static void PilotMultiplexer(uint8_t ChannelIndex)
 {
-	PORTD = (PORTD & MultiplexerTab[ChannelIndex].ForAnd) | MultiplexerTab[ChannelIndex].ForOr;
+	// PORTD = (PORTD & MultiplexerTab[ChannelIndex].ForAnd) | MultiplexerTab[ChannelIndex].ForOr;
+	digitalWrite(MULTI_1, MultiplexerTab[ChannelIndex].State_1);
+	digitalWrite(MULTI_2, MultiplexerTab[ChannelIndex].State_2);
+	digitalWrite(MULTI_3, MultiplexerTab[ChannelIndex].State_3);
+	digitalWrite(MULTI_4, MultiplexerTab[ChannelIndex].State_4);
+	
 	MultiplexerTab[ChannelIndex].IsOn = true;
 }
 
