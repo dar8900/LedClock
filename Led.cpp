@@ -15,22 +15,22 @@ typedef struct
 
 typedef enum
 {
-	CHANNEL_0 = 0,
-	CHANNEL_1,
-	CHANNEL_2,
-	CHANNEL_3,
-	CHANNEL_4,
-	CHANNEL_5,
-	CHANNEL_6,
-	CHANNEL_7,
-	CHANNEL_8,
-	CHANNEL_9,
-	CHANNEL_10,
-	CHANNEL_11,
-	CHANNEL_12,
-	CHANNEL_13,
-	CHANNEL_14,
-	CHANNEL_15,
+	CHANNEL_0 = 0,            //    {0,  0,  0,  0, false},
+	CHANNEL_1,                //    {1,  0,  0,  0, false},
+	CHANNEL_2,                //    {0,  1,  0,  0, false},
+	CHANNEL_3,                //    {1,  1,  0,  0, false},
+	CHANNEL_4,                //    {0,  0,  1,  0, false},
+	CHANNEL_5,                //    {1,  0,  1,  0, false},
+	CHANNEL_6,                //    {0,  1,  1,  0, false},
+	CHANNEL_7,                //    {1,  1,  1,  0, false},
+	CHANNEL_8,                //    {0,  0,  0,  1, false},
+	CHANNEL_9,                //    {1,  0,  0,  1, false},
+	CHANNEL_10,               //    {0,  1,  0,  1, false},
+	CHANNEL_11,               //    {1,  1,  0,  1, false},
+	CHANNEL_12,               //    {0,  0,  1,  1, false},
+	CHANNEL_13,               //    {1,  0,  1,  1, false},
+	CHANNEL_14,               //    {0,  1,  1,  1, false},
+	CHANNEL_15,               //    {1,  1,  1,  1, false},
 	MAX_CHANNEL
 }MULTIPLEXER_CHANNEL;
 
@@ -131,7 +131,7 @@ void LedInit()
 	uint8_t NumbToRoll = 0;
 	digitalWrite(ENABLE_MUX, LOW);
 	DisableLed = false;
-	// RotateLed(50);
+	RotateLed(500);
 	for(NumbToRoll = 0; NumbToRoll < 10; NumbToRoll++)
 	{
 		ShowNumber(RollNumb, true);

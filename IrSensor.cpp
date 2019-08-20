@@ -10,7 +10,7 @@ void ListenSensor()
 	if(SensorOn)
 	{
 		ReadSignal = analogRead(A1);
-		Serial.println(ReadSignal);
+		// Serial.println(ReadSignal);
 		if(ReadSignal < THR_SENSOR && !ShowTimeDate)
 		{
 			// Serial.println(ReadSignal);

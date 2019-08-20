@@ -44,16 +44,19 @@ void RtcInit()
 	{
 		while(1)
 		{
+			Serial.println("Rtc not begin");
 			BlinkErr();
 			delay(500);
 		}
 	}
 	if (! rtc.isrunning())
 	{
-		// Serial.println("Setting Time");
+		Serial.println("Setting Time");
 		SensorOn = false;
 		BlinkErr();
 		SettingTime = true;
+		// rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+		// Serial.println("Time Setted");
 		// SetTimeDate();
 		// SensorOn = true;
 	}

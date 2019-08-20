@@ -25,11 +25,11 @@ typedef enum
 	CLK_DISP_1  	=  6,  
 	DIO_DISP_1  	=  7,  
 	SENSOR_INPUT    =  8, 
-	NOT_USED_2  	=  9,  // Not Used
-	UP_BUTTON   	= 10,
+	UP_BUTTON     	= 10,  
 	DOWN_BUTTON 	= 11,
 	OK_BUTTON   	= 12,
 	ENABLE_MUX  	= 13,
+	NOT_USED   	    =  9, // Not Used
 	MAX_PIN
 	
 }PIN_CONF;

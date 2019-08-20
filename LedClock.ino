@@ -126,7 +126,7 @@ void loop()
 }
 
 #ifdef TASK_LED
-void Led(void *pvParameters)  // This is a task.
+void Led(void *pvParameters)  
 {
 	(void) pvParameters;
 	uint16_t Cnt = 0;
@@ -189,7 +189,7 @@ void Led(void *pvParameters)  // This is a task.
 #endif
 
 #ifdef TASK_GES_EVENTS
-void GesEvents(void *pvParameters)  // This is a task.
+void GesEvents(void *pvParameters) 
 {
 	(void) pvParameters;
 	ButtonPress = NO_PRESS;
@@ -277,8 +277,7 @@ void GesEvents(void *pvParameters)  // This is a task.
 #endif
 
 #ifdef TASK_SENSOR
-void ReadSensor(void *pvParameters)  // This is a task.
-{
+void ReadSensor(void *pvParameters) 
 	(void) pvParameters;
 	for(;;)
 	{
@@ -290,7 +289,7 @@ void ReadSensor(void *pvParameters)  // This is a task.
 #endif
 
 #ifdef TASK_TIME
-void GetTime(void *pvParameters)  // This is a task.
+void GetTime(void *pvParameters) 
 {
 	(void) pvParameters;
 	for(;;)
@@ -305,7 +304,7 @@ void GetTime(void *pvParameters)  // This is a task.
 #endif
 
 #ifdef TASK_KEYBOARD
-void KeyBoard(void *pvParameters)  // This is a task.
+void KeyBoard(void *pvParameters) 
 {
 	(void) pvParameters;
 	
@@ -318,7 +317,7 @@ void KeyBoard(void *pvParameters)  // This is a task.
 #endif
 
 #ifdef TASK_TEST
-void TaskTest(void *pvParameters)  // This is a task.
+void TaskTest(void *pvParameters)  
 {
 	(void) pvParameters;
 	uint8_t Cnt = 5;
