@@ -11,6 +11,8 @@
 
 #define Reset() wdt_enable(WDTO_30MS); while(1) {} 
 
+#define TIME_TO_LED 	MinuteLed(GlobalTimeDate.second())    // MinuteLed(GlobalTimeDate.minute());
+
 bool ShowTimeDate;
 bool SensorOn;
 bool SettingTime;
@@ -161,7 +163,8 @@ void Led(void *pvParameters)
 				}
 			}
 			// MinuteLed(GlobalTimeDate.minute()); 
-			MinuteLed(GlobalTimeDate.second());  /* DBG */
+			// MinuteLed(GlobalTimeDate.second());  /* DBG */
+			TIME_TO_LED;
 		}
 		else if(SettingTime)
 		{
@@ -171,7 +174,8 @@ void Led(void *pvParameters)
 		{
 			SetBrightness();
 			// MinuteLed(GlobalTimeDate.minute()); 
-			MinuteLed(GlobalTimeDate.second());  /* DBG */
+			// MinuteLed(GlobalTimeDate.second());  /* DBG */
+			TIME_TO_LED;
 		}
 		else if(SettingTimer)
 		{
@@ -181,7 +185,8 @@ void Led(void *pvParameters)
 		{
 			StartTimer();
 			// MinuteLed(GlobalTimeDate.minute()); 
-			MinuteLed(GlobalTimeDate.second());  /* DBG */
+			// MinuteLed(GlobalTimeDate.second());  /* DBG */
+			TIME_TO_LED;
 		}
 		OsDelay(100);
 	}
