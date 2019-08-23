@@ -4,6 +4,8 @@
 #include "LedClock.h"
 #include "Led.h"
 
+#undef SET_TIME_DBG
+
 static RTC_DS1307 rtc;
 DateTime GlobalTimeDate;
 uint8_t TimeNumbers[4]; 
@@ -40,6 +42,7 @@ static uint16_t year = 2019;
 
 void RtcInit()
 {
+	
 	if (! rtc.begin()) 
 	{
 		while(1)
@@ -55,9 +58,11 @@ void RtcInit()
 		SensorOn = false;
 		BlinkErr();
 		SettingTime = true;
-		// rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
-		// Serial.println("Time Setted");
-		// SetTimeDate();
+#ifdef SET_TIME_DBG
+		rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+		Serial.println("Time Setted");
+#endif
+		SetTimeDate();
 		// SensorOn = true;
 	}
 }

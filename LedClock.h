@@ -4,7 +4,7 @@
 #include "TaskOptions.h"
 
 #define OsDelay(ms) vTaskDelay(ms/portTICK_PERIOD_MS)
-
+#define TIME_TO_LED 	MinuteLed(GlobalTimeDate.second())    // MinuteLed(GlobalTimeDate.minute());
 
 
 extern bool ShowTimeDate;
@@ -25,9 +25,9 @@ typedef enum
 	CLK_DISP_1  	=  6,  
 	DIO_DISP_1  	=  7,  
 	SENSOR_INPUT    =  8, 
-	UP_BUTTON     	= 10,  
-	DOWN_BUTTON 	= 11,
-	OK_BUTTON   	= 12,
+	OK_BUTTON     	= 10,  
+	DOWN_BUTTON    	= 11,
+	UP_BUTTON   	= 12, 
 	ENABLE_MUX  	= 13,
 	NOT_USED   	    =  9, // Not Used
 	MAX_PIN

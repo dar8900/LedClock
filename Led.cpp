@@ -69,17 +69,17 @@ static MULTIPLEXER_VAR MultiplexerTab[MAX_CHANNEL] =
 static const MINUTE_TO_CHANNEL_S MinuteToChannel[MAX_MINUTE] = 
 {
 	{0 , CHANNEL_5 },
-	{5 , CHANNEL_4 },
-	{10, CHANNEL_3 },
-	{15, CHANNEL_2 },
-	{20, CHANNEL_1 },
-	{25, CHANNEL_0 },
+	{5 , CHANNEL_6 },
+	{10, CHANNEL_7 },
+	{15, CHANNEL_8 },
+	{20, CHANNEL_9 },
+	{25, CHANNEL_10},
 	{30, CHANNEL_11},
-	{35, CHANNEL_10},
-	{40, CHANNEL_9 },
-	{45, CHANNEL_8 },
-	{50, CHANNEL_7 },
-	{55, CHANNEL_6 },
+	{35, CHANNEL_0 },
+	{40, CHANNEL_1 },
+	{45, CHANNEL_2 },
+	{50, CHANNEL_3 },
+	{55, CHANNEL_4 },
 };
 
 // static MULTIPLEXER_VAR MultiplexerTab[MAX_CHANNEL] = 
@@ -134,17 +134,22 @@ static void PilotMultiplexer(uint8_t ChannelIndex)
 	MultiplexerTab[ChannelIndex].IsOn = true;
 }
 
-void RotateLed(uint16_t Delay)
+void RotateLed(uint16_t Delay, uint8_t Times)
 {
 	uint8_t ChannelIndex = CHANNEL_0;
+	uint8_t N_times = 0;
 	if(!DisableLed)
 	{
 		IsLedRotating = true;
-		for(ChannelIndex = CHANNEL_0; ChannelIndex < CHANNEL_12; ChannelIndex++)
+		for(N_times = 0; N_times < Times; N_times++)
 		{
-			PilotMultiplexer(ChannelIndex);
-			delay(Delay);
+			for(ChannelIndex = CHANNEL_0; ChannelIndex < CHANNEL_12; ChannelIndex++)
+			{
+				PilotMultiplexer(ChannelIndex);
+				delay(Delay);
+			}
 		}
+		PilotMultiplexer(CHANNEL_12);
 		IsLedRotating = false;
 	}
 }
@@ -155,7 +160,7 @@ void LedInit()
 	uint8_t NumbToRoll = 0;
 	digitalWrite(ENABLE_MUX, LOW);
 	DisableLed = false;
-	RotateLed(500);
+	RotateLed(80, 5);
 	for(NumbToRoll = 0; NumbToRoll < 10; NumbToRoll++)
 	{
 		ShowNumber(RollNumb, true);

@@ -11,7 +11,7 @@
 
 #define Reset() wdt_enable(WDTO_30MS); while(1) {} 
 
-#define TIME_TO_LED 	MinuteLed(GlobalTimeDate.second())    // MinuteLed(GlobalTimeDate.minute());
+
 
 bool ShowTimeDate;
 bool SensorOn;
@@ -55,7 +55,7 @@ void setup()
 	DisplaysInit();
 	RtcInit();
 	LedInit();
-	
+	SensorOn = true;
 	
 #ifdef TASK_LED	
 	xTaskCreate(
